@@ -16,6 +16,20 @@
                 height: 1px;
                 overflow: hidden;
             }
+            #output {
+                background-color: #f8f8f8;
+                border-radius: 3px;
+                border: 1px solid #ddd;
+                font-family: Consolas, "Liberation Mono", Courier, monospace;
+                font-size: 13px;
+                line-height: 19px;
+                min-height: 300px;
+                overflow: auto;
+                padding: 6px 10px;
+                white-space: pre;
+                width: 100%;
+                resize: vertical;
+            }
         </style>
     </head>
 
@@ -33,7 +47,8 @@
             <hr>
             <section class="hidden" id="output-wrapper">
                 <h2>Markdown</h2>
-                <pre id="output" class="pre-scrollable"></pre>
+                <textarea id="output"></textarea>
+                <button id="clear" type="button" class="btn btn-default pull-right">Clear</button>
             </section>
         </div>
 

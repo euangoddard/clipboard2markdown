@@ -5,6 +5,7 @@
         var paste_bin = document.querySelector('#paste-bin');
         var output = document.querySelector('#output');
         var output_wrapper = document.querySelector('#output-wrapper');
+        var clear = document.querySelector('#clear');
 
         document.addEventListener('keydown', function () {
             if (event.ctrlKey || event.metaKey) {
@@ -25,9 +26,14 @@
             var text_markdown = html2markdown(text_html, {
                 inlineStyle: true
             });
-            output.textContent = text_markdown;
+            output.value = text_markdown;
             output_wrapper.classList.remove('hidden');
         };
+
+        clear.addEventListener('click', function () {
+            output.value = '';
+            output_wrapper.classList.add('hidden');
+        });
 
     });
 })();
