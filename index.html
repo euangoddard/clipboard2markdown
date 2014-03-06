@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Convert cliboard to Markdown</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <style>
+            #paste-bin {
+                opacity: 0.01;
+                width: 100%;
+                height: 1px;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Convert cliboard to Markdown</h1>
+            <p class="lead">
+                Find the text the you want to be comverted to markdown, copy it to your clipboard and then hit <strong>Start</strong>.
+            </p>
+
+            <button id="start" type="button" class="btn btn-primary btn-lg">Start!</button>
+            <p class="hidden text-info" id="paste-info">Now press [Ctrl+V]</p>
+            <div contenteditable="true" id="paste-bin"></div>
+            <hr>
+            <pre id="output" class="pre-scrollable hidden"></pre>
+        </div>
+
+        <script src="./markdown_dom_parser.js"></script>
+        <script src="./html2markdown.js"></script>
+        <script src="./clipboard2markdown.js"></script>
+
+    </body>
+</html>
