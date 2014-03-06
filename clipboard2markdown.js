@@ -22,7 +22,9 @@
         var read_paste_bin = function () {
             var html = paste_bin.innerHTML;
             output.classList.remove('hidden');
-            output.textContent = html2markdown(html);
+            output.textContent = html2markdown(html, {
+                inlineStyle: true
+            });
         };
 
     });
