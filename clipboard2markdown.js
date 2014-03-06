@@ -7,12 +7,10 @@
 
         document.addEventListener('keydown', function () {
             if (event.ctrlKey || event.metaKey) {
-                switch (String.fromCharCode(event.which).toLowerCase()) {
-                case 'v':
+                if (String.fromCharCode(event.which).toLowerCase() === 'v') {
                     paste_bin.innerHTML = '';
                     paste_bin.focus();
                     output.classList.add('hidden');
-                    break;
                 }
             }
         });
