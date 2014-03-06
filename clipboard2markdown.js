@@ -4,6 +4,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         var paste_bin = document.querySelector('#paste-bin');
         var output = document.querySelector('#output');
+        var clear = document.querySelector('#clear');
 
         document.addEventListener('keydown', function () {
             if (event.ctrlKey || event.metaKey) {
@@ -27,7 +28,14 @@
             output.textContent = html2markdown(html, {
                 inlineStyle: true
             });
+            clear.classList.remove('hidden');
         };
+
+        clear.addEventListener('click', function () {
+            output.innerHTML = '';
+            output.classList.add('hidden');
+            clear.classList.add('hidden');
+        });
 
     });
 })();
