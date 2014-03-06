@@ -13,3 +13,9 @@ just want to hack on this, do this:
     $ python -m SimpleHTTPServer
 
 Launch favourite browser, go to `http://localhost:8000`
+
+
+## Tested browsers
+
+* Chrome 33 (Linux and OS X)
+* Firefox 27 (Linux)
