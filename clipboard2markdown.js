@@ -7,7 +7,7 @@
         var output_wrapper = document.querySelector('#output-wrapper');
         var clear = document.querySelector('#clear');
 
-        document.addEventListener('keydown', function () {
+        document.addEventListener('keydown', function (event) {
             if (event.ctrlKey || event.metaKey) {
                 if (String.fromCharCode(event.which).toLowerCase() === 'v') {
                     paste_bin.innerHTML = '';
