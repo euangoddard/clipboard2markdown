@@ -13,6 +13,19 @@
                 height: 1px;
                 overflow: hidden;
             }
+            #output {
+                background-color: #f8f8f8;
+                border-radius: 3px;
+                border: 1px solid #ddd;
+                font-family: Consolas, "Liberation Mono", Courier, monospace;
+                font-size: 13px;
+                line-height: 19px;
+                min-height: 500px;
+                overflow: auto;
+                padding: 6px 10px;
+                white-space: pre;
+                width: 100%;
+            }
         </style>
     </head>
 
@@ -26,7 +39,7 @@
             </p>
             <div contenteditable="true" id="paste-bin"></div>
             <hr>
-            <pre id="output" class="pre-scrollable hidden"></pre>
+            <textarea id="output" class="pre-scrollable hidden"></textarea>
             <button id="clear" class="hidden" type="button">Clear</button>
         </div>
 
