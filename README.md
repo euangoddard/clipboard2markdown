@@ -20,3 +20,4 @@ Launch favourite browser, go to `http://localhost:8000`
 * Chrome 33 (Linux and OS X)
 * Firefox 27 (Linux)
 * Safari 5 (OS X)
+* Internet Explorer 11
