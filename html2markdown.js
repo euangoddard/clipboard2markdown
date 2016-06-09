@@ -65,8 +65,8 @@ function html2markdown(html, opts) {
 	var inlineStyle = opts['inlineStyle'] || false;
 	var parser = opts['parser'];
 	var markdownTags = {
-		"hr": "- - -\n\n",
-		"br": "  \n",
+		"hr": "* * * * *\n\n",
+		"br": "\\\n",
 		"title": "# ",
 		"h1": "# ",
 		"h2": "## ",
@@ -79,15 +79,15 @@ function html2markdown(html, opts) {
 		"code": "`",
 		"kbd": "`",
 		"tt": "`",
-		"i": "_",
-		"em": "_",
-		"dfn": "_",
-		"var": "_",
-		"cite": "_",
+		"i": "*",
+		"em": "*",
+		"dfn": "*",
+		"var": "*",
+		"cite": "*",
 		"span": " ",
-		"ul": "* ",
-		"ol": "1. ",
-		"dl": "- ",
+		"ul": "-   ",
+		"ol": "1.  ",
+		"dl": "-   ",
 		"blockquote": "> "
 	};
 
@@ -99,7 +99,7 @@ function html2markdown(html, opts) {
 		var listItem = "";
 		if (listTagStack) {
 			for (var i = 0; i < listTagStack.length - 1; i++) {
-				listItem += "  ";
+				listItem += "    ";
 			}
 		}
 		listItem += peek(listTagStack);
@@ -453,7 +453,9 @@ function html2markdown(html, opts) {
 				}
 				break;
 			case "ul":
+				nodeList.push("\n");
 			case "ol":
+				nodeList.push("\n");
 			case "dl":
 				listBlock();
 				listTagStack.pop();
