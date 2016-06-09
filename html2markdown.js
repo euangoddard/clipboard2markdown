@@ -78,6 +78,7 @@ function html2markdown(html, opts) {
 		"strong": "**",
 		"code": "`",
 		"kbd": "`",
+		"samp": "`",
 		"tt": "`",
 		"i": "*",
 		"em": "*",
@@ -233,6 +234,7 @@ function html2markdown(html, opts) {
 			case "cite":
 			case "code":
 			case "kbd":
+			case "samp":
 			case "tt":
 				if (nodeList[nodeList.length-1] === markdownTags[tag]) {
 					nodeList.splice(nodeList.length-1, 1);
@@ -240,7 +242,6 @@ function html2markdown(html, opts) {
 					nodeList.push(markdownTags[tag]);
 				}
 				break;
-			case "code":
 			case "span":
 				if (preStack.length > 0) {
 					break;
@@ -523,7 +524,9 @@ function html2markdown(html, opts) {
 				preStack.pop();
 				break;
 			case "code":
-			case "span":
+			case "kbd":
+			case "samp":
+			case "tt":
 				if (preStack.length > 0) {
 					break;
 				} else if (trim(peek(nodeList)) == "") {
