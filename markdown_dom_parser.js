@@ -29,9 +29,14 @@
 var HTMLParser = function (html, handler, opts) {
 	opts = opts || {};
 
-	var e = document.createElement('div');
-	e.innerHTML = html;
-	var node = e;
+	var node;
+	if (html instanceof Element) {
+		node = html;
+	} else {
+		var e = document.createElement('div');
+		e.innerHTML = html;
+		node = e;
+	}
 	var nodesToIgnore = opts['nodesToIgnore'] || [];
 	var parseHiddenNodes = opts['parseHiddenNodes'] || 'false';
 
