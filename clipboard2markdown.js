@@ -1,3 +1,15 @@
+function trim(value) {
+    return value.replace(/^\s+|\s+$/g, "");
+}
+
+function asciify(str) {
+    return str.replace(/[\u2018\u2019]/g, "'")
+              .replace(/[\u201c\u201d]/g, '"')
+              .replace(/\u2013/g, "--")
+              .replace(/\u2014/g, "---")
+              .replace(/\u2026/g, "...");
+}
+
 (function () {
     'use strict';
 
@@ -25,9 +37,9 @@
 
         var read_paste_bin = function () {
             var text_html = paste_bin.innerHTML;
-            var text_markdown = html2markdown(text_html, {
+            var text_markdown = trim(asciify(html2markdown(text_html, {
                 inlineStyle: true
-            });
+            })));
             output.value = text_markdown;
             output_wrapper.classList.remove('hidden');
         };
