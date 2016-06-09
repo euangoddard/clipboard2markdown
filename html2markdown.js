@@ -84,7 +84,7 @@ function html2markdown(html, opts) {
 		"dfn": "*",
 		"var": "*",
 		"cite": "*",
-		"span": " ",
+		"span": "",
 		"ul": "-   ",
 		"ol": "1.  ",
 		"dl": "-   ",
