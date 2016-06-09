@@ -2,6 +2,7 @@
     'use strict';
 
     document.addEventListener('DOMContentLoaded', function () {
+        var instructions = document.querySelector('#instructions');
         var paste_bin = document.querySelector('#paste-bin');
         var output = document.querySelector('#output');
         var output_wrapper = document.querySelector('#output-wrapper');
@@ -12,6 +13,7 @@
                 if (String.fromCharCode(event.which).toLowerCase() === 'v') {
                     paste_bin.innerHTML = '';
                     paste_bin.focus();
+                    instructions.classList.add('hidden');
                     output_wrapper.classList.add('hidden');
                 }
             }
