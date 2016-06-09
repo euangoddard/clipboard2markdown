@@ -1,7 +1,7 @@
 clipboard2markdown
 ==================
 
-Convert rich-text on your clipbaord to markdown
+Convert rich-text on your clipboard to markdown
 
 ## How to use
 
