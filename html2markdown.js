@@ -77,6 +77,8 @@ function html2markdown(html, opts) {
 		"b": "**",
 		"strong": "**",
 		"code": "`",
+		"kbd": "`",
+		"tt": "`",
 		"i": "_",
 		"em": "_",
 		"dfn": "_",
@@ -229,6 +231,9 @@ function html2markdown(html, opts) {
 			case "dfn":
 			case "var":
 			case "cite":
+			case "code":
+			case "kbd":
+			case "tt":
 				if (nodeList[nodeList.length-1] === markdownTags[tag]) {
 					nodeList.splice(nodeList.length-1, 1);
 				} else {
