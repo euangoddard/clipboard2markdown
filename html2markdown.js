@@ -359,7 +359,8 @@ function html2markdown(html, opts) {
 		chars: function(text) {
 			if (preStack.length > 0) {
 				text = text.replace(/\n/g,"\n    ");
-			} else if (trim(text) != "") {
+			// } else if (trim(text) != "") {
+			} else if (text != "") {
 				text = text.replace(/\s+/g, " ");
 
 				var prevText = peekTillNotEmpty(nodeList);
@@ -423,7 +424,7 @@ function html2markdown(html, opts) {
 			case "a":
 				var text = sliceText("[");
 				text = text.replace(/\s+/g, " ");
-				text = trim(text);
+				// text = trim(text);
 
 				if (text == "") {
 					nodeList.pop();
