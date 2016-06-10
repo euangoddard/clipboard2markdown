@@ -3,11 +3,14 @@ function trim(value) {
 }
 
 function asciify(str) {
-    return str.replace(/[\u2018\u2019]/g, "'")
-              .replace(/[\u201c\u201d]/g, '"')
-              .replace(/\u2013/g, "--")
+    return str.replace(/[\u2018\u2019\u00b4]/g, "'")
+              .replace(/[\u201c\u201d\u2033]/g, '"')
+              .replace(/[\u2212\u2022\u00b7]/g, "-")
+              .replace(/[\u2013\u2015]/g, "--")
               .replace(/\u2014/g, "---")
-              .replace(/\u2026/g, "...");
+              .replace(/\u2026/g, "...")
+              .replace(/[ ]+\n/g, "\n")
+              .replace(/\n\n\n*/g, "\n\n");
 }
 
 (function () {
