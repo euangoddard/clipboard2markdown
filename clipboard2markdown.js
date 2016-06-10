@@ -42,6 +42,7 @@ function asciify(str) {
             })));
             output.value = text_markdown;
             output_wrapper.classList.remove('hidden');
+            output.focus();
         };
 
         clear.addEventListener('click', function () {
