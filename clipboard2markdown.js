@@ -37,7 +37,7 @@ function asciify(str) {
 
         var read_paste_bin = function () {
             var text_html = paste_bin.innerHTML;
-            var text_markdown = trim(asciify(html2markdown(text_html, {
+            var text_markdown = trim(asciify(html2markdown(trim(text_html), {
                 inlineStyle: true
             })));
             output.value = text_markdown;
