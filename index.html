@@ -1,22 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
-        <title>
-            Convert clipboard to Markdown
-        </title>
-        <meta
-            name="viewport" content="width=device-width, initial-scale=1"
-        />
-        <meta
-            charset="utf-8"
-        />
-        <meta
-            content="text/html; charset=utf-8" http-equiv="Content-Type"
-        />
-        <link
-            rel="stylesheet"
-            href="bootstrap.min.css"
-        />
+        <title>Convert clipboard to Markdown</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charset="utf-8" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <link rel="stylesheet" href="bootstrap.min.css" />
+        <script src="markdown_dom_parser.js"></script>
+        <script src="html2markdown.js"></script>
+        <script src="clipboard2markdown.js"></script>
         <style>
             body {
                 margin-top: 5%;
@@ -45,25 +37,13 @@
     <body>
         <div class="container">
             <section id="instructions">
-                <h1>
-                    Convert clipboard to Markdown
-                </h1>
-                <h2>
-                    Instructions
-                </h2>
+                <h1>Convert clipboard to Markdown</h1>
+                <h2>Instructions</h2>
                 <ol>
-                    <li>
-                        Find the text that you want to be converted to markdown (e.g., in another browser tab)
-                    </li>
-                    <li>
-                        Copy it to your clipboard (<code>[Ctrl] + C</code> or <code>⌘ + C</code> on Mac)
-                    </li>
-                    <li>
-                        Hit <code>[Ctrl] + V</code> or <code>⌘ + V</code> on Mac in this window
-                    </li>
-                    <li>
-                        Your markdown will appear below!
-                    </li>
+                    <li>Find the text that you want to be converted to markdown (e.g., in another browser tab)</li>
+                    <li>Copy it to your clipboard (<code>[Ctrl] + C</code> or <code>⌘ + C</code> on Mac)</li>
+                    <li>Hit <code>[Ctrl] + V</code> or <code>⌘ + V</code> on Mac in this window</li>
+                    <li>Your markdown will appear below!</li>
                 </ol>
             <!-- <hr /> -->
             </section>
@@ -72,18 +52,9 @@
                 <!-- <h2>Markdown</h2> -->
                 <textarea id="output"></textarea>
                 <!--
-                <button
-                    id="clear"
-                    type="button"
-                    class="btn btn-default pull-right">
-                    Clear
-                </button>
+                <button id="clear" type="button" class="btn btn-default pull-right">Clear</button>
                 -->
             </section>
         </div>
-
-        <script src="markdown_dom_parser.js"></script>
-        <script src="html2markdown.js"></script>
-        <script src="clipboard2markdown.js"></script>
     </body>
 </html>
