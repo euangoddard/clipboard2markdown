@@ -85,6 +85,10 @@ function html2markdown(html, opts) {
 		"dfn": "*",
 		"var": "*",
 		"cite": "*",
+		"sup": "^",
+		"sub": "~",
+		"del": "~~",
+		"s": "~~",
 		"span": "",
 		"ul": "-   ",
 		"ol": "1.  ",
@@ -232,6 +236,10 @@ function html2markdown(html, opts) {
 			case "dfn":
 			case "var":
 			case "cite":
+			case "sup":
+			case "sub":
+			case "del":
+			case "s":
 			case "code":
 			case "kbd":
 			case "samp":
@@ -403,6 +411,10 @@ function html2markdown(html, opts) {
 			case "dfn":
 			case "var":
 			case "cite":
+			case "sup":
+			case "sub":
+			case "del":
+			case "s":
 				if (!removeIfEmptyTag(markdownTags[tag])) {
 					nodeList.push(trim(sliceText(markdownTags[tag])));
 					nodeList.push(markdownTags[tag]);
