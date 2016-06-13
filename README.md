@@ -56,7 +56,6 @@ Credits
 [clipboard2markdown](https://github.com/euangoddard/clipboard2markdown)
 was created by [Euan Goddard](https://github.com/euangoddard).
 
-It leverages [html2markdown](https://github.com/kates/html2markdown)
-by [Kates Gasis](https://github.com/kates) and
-[Himanshu Gilani](https://github.com/hgilani).
-The HTML template is based on [Bootstrap](http://getbootstrap.com/).
+It leverages [to-markdown](https://github.com/domchristie/to-markdown)
+by [Dom Christie](https://github.com/domchristie). The HTML template
+is based on [Bootstrap](http://getbootstrap.com/).

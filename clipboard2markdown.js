@@ -40,9 +40,7 @@ function asciify(str) {
 
         var read_paste_bin = function () {
             var text_html = paste_bin.innerHTML;
-            var text_markdown = trim(asciify(html2markdown(trim(text_html), {
-                inlineStyle: true
-            })));
+            var text_markdown = trim(asciify(toMarkdown(trim(text_html))));
             output.value = text_markdown;
             output_wrapper.classList.remove('hidden');
             output.focus();
