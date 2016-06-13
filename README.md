@@ -6,10 +6,15 @@ Convert richly formatted text or HTML to
 Paste from the clipboard to a Markdown converter running in
 the browser.
 
-Demo
-----
+Interactive demo
+----------------
 
 <http://euangoddard.github.io/clipboard2markdown/>
+
+Video
+-----
+
+![Screencast](screencast.gif)
 
 Usage
 -----
