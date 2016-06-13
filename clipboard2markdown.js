@@ -1,7 +1,3 @@
-function trim(value) {
-    return value.replace(/^\s+|\s+$/g, "");
-}
-
 function asciify(str) {
     return str.replace(/[\u2018\u2019\u00b4]/g, "'")
               .replace(/[\u201c\u201d\u2033]/g, '"')
@@ -10,8 +6,90 @@ function asciify(str) {
               .replace(/\u2014/g, "---")
               .replace(/\u2026/g, "...")
               .replace(/[ ]+\n/g, "\n")
-              .replace(/\n\n\n*/g, "\n\n");
+              .replace(/\n\n\n*/g, "\n\n")
+              .replace(/^\s+|\s+$/g, "");
 }
+
+var array = [
+  {
+    filter: 'sup',
+    replacement: function (content) {
+      return '^' + content + '^'
+    }
+  },
+
+  {
+    filter: 'sub',
+    replacement: function (content) {
+      return '~' + content + '~'
+    }
+  },
+
+  {
+    filter: 'br',
+    replacement: function () {
+      return '\\\n'
+    }
+  },
+
+  {
+    filter: 'hr',
+    replacement: function () {
+      return '\n\n* * * * *\n\n'
+    }
+  },
+
+  {
+    filter: ['em', 'i'],
+    replacement: function (content) {
+      return '*' + content + '*'
+    }
+  },
+
+  {
+    filter: function (node) {
+      var hasSiblings = node.previousSibling || node.nextSibling
+      var isCodeBlock = node.parentNode.nodeName === 'PRE' && !hasSiblings
+      var isCodeElem = node.nodeName === 'CODE' ||
+          node.nodeName === 'KBD'  ||
+          node.nodeName === 'SAMP' ||
+          node.nodeName === 'TT'
+
+      return isCodeElem && !isCodeBlock
+    },
+    replacement: function (content) {
+      return '`' + content + '`'
+    }
+  },
+
+  {
+    filter: function (node) {
+      return node.nodeName === 'A' && node.getAttribute('href')
+    },
+    replacement: function (content, node) {
+      var titlePart = node.title ? ' "' + node.title + '"' : ''
+      var url = node.getAttribute('href');
+      if(content == url) {
+        return '<' + url + '>';
+      } else {
+        return '[' + content + '](' + url + titlePart + ')'
+      }
+    }
+  },
+
+  {
+    filter: 'li',
+    replacement: function (content, node) {
+      content = content.replace(/^\s+/, '').replace(/\n/gm, '\n    ')
+      var prefix = '-   '
+      var parent = node.parentNode
+      var index = Array.prototype.indexOf.call(parent.children, node) + 1
+
+      prefix = /ol/i.test(parent.nodeName) ? index + '.  ' : '-   '
+      return prefix + content
+    }
+  }
+];
 
 (function () {
     'use strict';
@@ -40,7 +118,9 @@ function asciify(str) {
 
         var read_paste_bin = function () {
             var text_html = paste_bin.innerHTML;
-            var text_markdown = trim(asciify(toMarkdown(trim(text_html))));
+            var text_markdown = asciify(toMarkdown(text_html,
+                                                   { converters: array,
+                                                     gfm: true }));
             output.value = text_markdown;
             output_wrapper.classList.remove('hidden');
             output.focus();
