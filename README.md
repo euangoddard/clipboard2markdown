@@ -19,18 +19,17 @@ Video
 Usage
 -----
 
-Open `index.html` in a favorite browser and hit `Ctrl+C`
+Open [index.html](index.html) in a favorite browser and hit `Ctrl+C`
 (or `⌘+C` on Mac).
 
 To copy the converted Markdown to the clipboard, press `Ctrl+A`
-followed by `Ctrl+C`.
+followed by `Ctrl+C` (or `⌘+A` and `⌘+C` on Mac).
 
 One can paste multiple times. This overwrites the previous conversion.
 
-Server
-------
+### Server
 
-To host the converter on a local server:
+Alternatively, the converter may be hosted on a local server:
 
     $ cd clipboard2markdown
     $ python -m SimpleHTTPServer
@@ -48,7 +47,8 @@ Tested browsers
 License
 -------
 
-Released under the MIT License. See the `LICENSE` file for details.
+Released under the MIT License. See the [LICENSE](LICENSE) file
+for details.
 
 Credits
 -------
