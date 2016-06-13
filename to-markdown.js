@@ -197,7 +197,7 @@ toMarkdown = function (input, options) {
   }
 
   // Escape potential ol triggers
-  input = input.replace(/(\d+)\. /g, '$1\\. ')
+  input = input.replace(/(>[\r\n\s]*)(\d+)\.(&nbsp;| )/g, '$1$2\\.$3')
 
   var clone = htmlToDom(input).body
   var nodes = bfsOrder(clone)
