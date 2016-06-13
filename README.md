@@ -45,11 +45,18 @@ Tested browsers
 -   Safari 5 (OS X)
 -   Internet Explorer 11
 
+License
+-------
+
+Released under the MIT License. See the `LICENSE` file for details.
+
 Credits
 -------
 
 [clipboard2markdown](https://github.com/euangoddard/clipboard2markdown)
 was created by [Euan Goddard](https://github.com/euangoddard).
+
 It leverages [html2markdown](https://github.com/kates/html2markdown)
 by [Kates Gasis](https://github.com/kates) and
 [Himanshu Gilani](https://github.com/hgilani).
+The HTML template is based on [Bootstrap](http://getbootstrap.com/).
