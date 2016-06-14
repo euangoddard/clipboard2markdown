@@ -12,6 +12,7 @@ function asciify(str) {
               .replace(/\n-\n/g, "\n")
               .replace(/\n\n\s*\\\n/g, "\n\n")
               .replace(/\n\n\n*/g, "\n\n")
+              .replace(/[ ]+$/gm, "")
               .replace(/^\s+|[\s\\]+$/g, "");
 }
 
