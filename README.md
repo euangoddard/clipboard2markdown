@@ -3,16 +3,19 @@ clipboard2markdown
 
 Convert richly formatted text or HTML to
 [Markdown](https://daringfireball.net/projects/markdown/).
-Paste from the clipboard to a Markdown converter running in
-the browser.
+Paste to Markdown with a single keypress.
 
-Interactive demo
-----------------
+The conversion is carried out by a Markdown converter running in the
+browser ([to-markdown](https://github.com/domchristie/to-markdown)).
+
+Demo
+----
+
+### Interactive
 
 <http://euangoddard.github.io/clipboard2markdown/>
 
-Video
------
+### Video
 
 ![Screencast](screencast.gif)
 
@@ -27,22 +30,15 @@ followed by `Ctrl+C` (or `⌘+A` and `⌘+C` on Mac).
 
 One can paste multiple times. This overwrites the previous conversion.
 
-Tested browsers
----------------
+### Tested browsers
 
 -   Chrome 33 (Linux and OS X)
 -   Firefox 27 (Linux)
 -   Safari 5 (OS X)
 -   Internet Explorer 11
 
-License
--------
-
-Released under the MIT License. See the [LICENSE](LICENSE) file
-for details.
-
-Credits
--------
+About
+-----
 
 [clipboard2markdown](https://github.com/euangoddard/clipboard2markdown)
 was created by [Euan Goddard](https://github.com/euangoddard).
@@ -56,3 +52,8 @@ The original version used
 [Himanshu Gilani](https://github.com/hgilani).
 
 The HTML template is based on [Bootstrap](http://getbootstrap.com/).
+
+### License
+
+Released under the MIT License. See the [LICENSE](LICENSE) file
+for details.
