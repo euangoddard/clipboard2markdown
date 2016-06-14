@@ -1,12 +1,13 @@
 clipboard2markdown
 ==================
 
-Convert richly formatted text or HTML to
+Easily convert richly formatted text or HTML to
 [Markdown](http://daringfireball.net/projects/markdown/syntax).
-Paste to Markdown with a single keypress.
+Use the clipboard and paste to Markdown with a single keypress.
 
-The conversion is carried out by a Markdown converter running in the
-browser ([to-markdown](https://github.com/domchristie/to-markdown)).
+The conversion is carried out by
+[to-markdown](https://github.com/domchristie/to-markdown),
+a Markdown converter running in the browser.
 
 Demo
 ----
@@ -35,23 +36,21 @@ One can paste multiple times. This overwrites the previous conversion.
 -   Chrome 33 (Linux and OS X)
 -   Firefox 27 (Linux)
 -   Safari 5 (OS X)
--   Internet Explorer 11
+-   Internet Explorer 11 (Windows)
 
 About
 -----
 
 [clipboard2markdown](https://github.com/euangoddard/clipboard2markdown)
 was created by [Euan Goddard](https://github.com/euangoddard).
-[Vegard Øye](https://github.com/epsil) ported it to
-[to-markdown](https://github.com/domchristie/to-markdown) by
-[Dom Christie](https://github.com/domchristie).
-
 The original version used
 [html2markdown](https://github.com/kates/html2markdown) by
 [Kates Gasis](https://github.com/kates) and
 [Himanshu Gilani](https://github.com/hgilani).
-
-The HTML template is based on [Bootstrap](http://getbootstrap.com/).
+[Vegard Øye](https://github.com/epsil) ported it to
+[to-markdown](https://github.com/domchristie/to-markdown) by
+[Dom Christie](https://github.com/domchristie). The HTML template
+is based on [Bootstrap](http://getbootstrap.com/).
 
 ### License
 
