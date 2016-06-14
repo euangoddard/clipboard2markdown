@@ -27,15 +27,6 @@ followed by `Ctrl+C` (or `⌘+A` and `⌘+C` on Mac).
 
 One can paste multiple times. This overwrites the previous conversion.
 
-### Server
-
-Alternatively, the converter may be hosted on a local server:
-
-    $ cd clipboard2markdown
-    $ python -m SimpleHTTPServer
-
-Then open <http://localhost:8000/> in the browser.
-
 Tested browsers
 ---------------
 
