@@ -2,7 +2,7 @@ clipboard2markdown
 ==================
 
 Convert richly formatted text or HTML to
-[Markdown](https://daringfireball.net/projects/markdown/).
+[Markdown](http://daringfireball.net/projects/markdown/syntax).
 Paste to Markdown with a single keypress.
 
 The conversion is carried out by a Markdown converter running in the
