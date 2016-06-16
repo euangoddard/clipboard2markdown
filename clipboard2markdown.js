@@ -59,7 +59,7 @@
         var hasSiblings = node.previousSibling || node.nextSibling;
         var isCodeBlock = node.parentNode.nodeName === 'PRE' && !hasSiblings;
         var isCodeElem = node.nodeName === 'CODE' ||
-            node.nodeName === 'KBD'  ||
+            node.nodeName === 'KBD' ||
             node.nodeName === 'SAMP' ||
             node.nodeName === 'TT';
 
@@ -75,10 +75,12 @@
         return node.nodeName === 'A' && node.getAttribute('href');
       },
       replacement: function (content, node) {
-        var titlePart = node.title ? ' "' + node.title + '"' : '';
         var url = node.getAttribute('href');
+        var titlePart = node.title ? ' "' + node.title + '"' : '';
         if (content === url) {
           return '<' + url + '>';
+        } else if (url.match('mailto:' + content)) {
+          return '<' + content + '>';
         } else {
           return '[' + content + '](' + url + titlePart + ')';
         }
