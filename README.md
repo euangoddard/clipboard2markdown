@@ -1,13 +1,13 @@
 clipboard2markdown
 ==================
 
-Easily convert richly formatted text or HTML to
-[Markdown](http://daringfireball.net/projects/markdown/syntax).
-Use the clipboard and paste to Markdown with a single keypress.
-
-The conversion is carried out by
-[to-markdown](https://github.com/domchristie/to-markdown),
-a Markdown converter running in the browser.
+> Easily convert richly formatted text or HTML to
+> [Markdown](http://daringfireball.net/projects/markdown/syntax).
+> Use the clipboard and paste to Markdown with a single keypress.
+>
+> The conversion is carried out by
+> [to-markdown](https://github.com/domchristie/to-markdown),
+> a Markdown converter running in the browser.
 
 Demo
 ----
