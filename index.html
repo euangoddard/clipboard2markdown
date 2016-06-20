@@ -1,85 +1,57 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
     <head>
-        <title>
-            Convert clipboard to Markdown
-        </title>
-        <meta
-            name="viewport" content="width=device-width, initial-scale=1"
-        />
-        <meta
-            charset="utf-8"
-        />
-        <meta
-            content="text/html; charset=utf-8" http-equiv="Content-Type"
-        />
-        <link
-            rel="stylesheet"
-            href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"
-        />
+        <title>Paste to Markdown</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <link rel="stylesheet" href="bootstrap.css">
+        <script src="to-markdown.js"></script>
+        <script src="clipboard2markdown.js"></script>
         <style>
-            #paste-bin {
+            h2 {
+                font-size: 22px;
+                font-style: italic;
+            }
+            body {
+                margin-top: 5%;
+                margin-bottom: 10%;
+            }
+            #pastebin {
                 opacity: 0.01;
                 width: 100%;
                 height: 1px;
                 overflow: hidden;
             }
             #output {
-                background-color: #f8f8f8;
-                border-radius: 3px;
-                border: 1px solid #ddd;
+                border: none;
                 font-family: Consolas, "Liberation Mono", Courier, monospace;
                 font-size: 13px;
                 line-height: 19px;
-                min-height: 300px;
+                min-height: 500px;
                 overflow: auto;
                 padding: 6px 10px;
-                white-space: pre;
+                resize: none;
                 width: 100%;
-                resize: vertical;
             }
         </style>
     </head>
-
     <body>
         <div class="container">
-            <h1>
-                Convert clipboard to Markdown
-            </h1>
-            <h2>
-                Instructions
-            </h2>
-            <ol>
-                <li>
-                    Find the text that you want to be converted to markdown (e.g. in another browser tab)
-                </li>
-                <li>
-                    Copy it to your clipboard (<code>[Ctrl] + C</code> or <code>⌘ + C</code> on Mac)
-                </li>
-                <li>
-                    Hit <code>[Ctrl] + V</code> or <code>⌘ + V</code> on Mac in this window
-                </li>
-                <li>
-                    Your markdown will appear below!
-                </li>
-            </ol>
-            <div contenteditable="true" id="paste-bin"></div>
-            <hr />
-            <section class="hidden" id="output-wrapper">
-                <h2>Markdown</h2>
+            <section id="info">
+                <h1>Paste to Markdown</h1>
+                <h2>Instructions</h2>
+                <ol>
+                    <li>Find the text to convert to Markdown (<i>e.g.</i>, in another browser tab)</li>
+                    <li>Copy it to the clipboard (<code>Ctrl+C</code>, or <code>&#8984;+C</code> on Mac)</li>
+                    <li>Paste it into this window (<code>Ctrl+V</code>, or <code>&#8984;+V</code> on Mac)</li>
+                    <li>The converted Markdown will appear!</li>
+                </ol>
+            </section>
+            <div contenteditable="true" id="pastebin"></div>
+            <section class="hidden" id="wrapper">
                 <textarea id="output"></textarea>
-                <button
-                    id="clear"
-                    type="button"
-                    class="btn btn-default pull-right"
-                >
-                    Clear
-                </button>
             </section>
         </div>
-
-        <script src="./markdown_dom_parser.js"></script>
-        <script src="./html2markdown.js"></script>
-        <script src="./clipboard2markdown.js"></script>
     </body>
 </html>
