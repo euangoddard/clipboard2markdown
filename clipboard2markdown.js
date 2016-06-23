@@ -155,6 +155,7 @@
         output.value = markdown;
         wrapper.classList.remove('hidden');
         output.focus();
+        output.select();
       }, 200);
     });
   });
