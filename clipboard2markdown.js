@@ -330,6 +330,7 @@
             }
             result.push('');
           }
+        }
         
         i--; // Adjust for loop increment
       } else {
