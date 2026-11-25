@@ -66,13 +66,30 @@ describe('initial state', () => {
     expect(ui.status).not.toBeVisible();
   });
 
+  // The stylesheet shows one wording or the other with `@media (pointer: coarse)`.
+  // jsdom doesn't apply it, so each wording is read on its own.
+  const stepsFor = (info: HTMLElement, device: 'keyboard' | 'touch') =>
+    Array.from(info.querySelectorAll('ol > li'), (li) => {
+      const variant = li.querySelector(`.for-${device}`) ?? li;
+      return variant.textContent!.replace(/\s+/g, ' ').trim();
+    });
+
   it('lists the four steps of the original instructions', () => {
     const { ui } = setup();
-    const steps = Array.from(ui.info.querySelectorAll('ol > li'), (li) => li.textContent);
-    expect(steps).toEqual([
+    expect(stepsFor(ui.info, 'keyboard')).toEqual([
       'Find the text to convert to Markdown (e.g., in another browser tab)',
       'Copy it to the clipboard (Ctrl+C, or ⌘+C on Mac)',
       'Paste it into this window (Ctrl+V, or ⌘+V on Mac)',
+      'The converted Markdown will appear!',
+    ]);
+  });
+
+  it('gives touch devices steps without keyboard shortcuts', () => {
+    const { ui } = setup();
+    expect(stepsFor(ui.info, 'touch')).toEqual([
+      'Find the text to convert to Markdown (e.g., in another browser tab)',
+      'Copy it to the clipboard (select it, then choose Copy)',
+      'Paste it into the area above (tap and hold, then choose Paste)',
       'The converted Markdown will appear!',
     ]);
   });

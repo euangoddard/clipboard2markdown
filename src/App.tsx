@@ -176,10 +176,20 @@ export function App(props: AppProps): JSX.Element {
               Find the text to convert to Markdown (<i>e.g.</i>, in another browser tab)
             </li>
             <li class="step">
-              Copy it to the clipboard (<code>Ctrl+C</code>, or <code>&#8984;+C</code> on Mac)
+              <span class="for-keyboard">
+                Copy it to the clipboard (<code>Ctrl+C</code>, or <code>&#8984;+C</code> on Mac)
+              </span>
+              <span class="for-touch">
+                Copy it to the clipboard (select it, then choose <strong>Copy</strong>)
+              </span>
             </li>
             <li class="step">
-              Paste it into this window (<code>Ctrl+V</code>, or <code>&#8984;+V</code> on Mac)
+              <span class="for-keyboard">
+                Paste it into this window (<code>Ctrl+V</code>, or <code>&#8984;+V</code> on Mac)
+              </span>
+              <span class="for-touch">
+                Paste it into the area above (tap and hold, then choose <strong>Paste</strong>)
+              </span>
             </li>
             <li class="step">The converted Markdown will appear!</li>
           </ol>
@@ -214,8 +224,12 @@ export function App(props: AppProps): JSX.Element {
             spellcheck={false}
             onInput={(event) => setMarkdown(event.currentTarget.value)}
           />
-          <p class="hint">
+          <p class="hint for-keyboard">
             Paste again to insert at the cursor, or select everything first to replace it.
+          </p>
+          <p class="hint for-touch">
+            Paste into the area above again to replace this Markdown, or tap in the Markdown first to insert at that
+            point.
           </p>
         </section>
 
