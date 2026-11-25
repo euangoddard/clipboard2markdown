@@ -103,6 +103,12 @@ describe('initial state', () => {
     const { ui } = setup();
     expect(ui.pastebin).toHaveAttribute('contenteditable', 'true');
   });
+
+  it('gives the paste target a role that permits its accessible name', () => {
+    const { ui } = setup();
+    expect(ui.pastebin).toHaveRole('textbox');
+    expect(ui.pastebin).toHaveAccessibleName('Paste target');
+  });
 });
 
 describe('pressing Ctrl+V / ⌘+V', () => {
