@@ -4,13 +4,71 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="Convert richly formatted text or HTML to Markdown with a single paste." />
-    <title>Paste to Markdown</title>
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <title>Paste to Markdown – convert rich text and HTML to Markdown</title>
+    <meta
+      name="description"
+      content="Free rich text and HTML to Markdown converter. Paste from Google Docs, Word or any web page and copy clean GFM or Pandoc Markdown. Runs in your browser."
+    />
+    <link rel="canonical" href="https://euangoddard.github.io/clipboard2markdown/" />
+
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#161716" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph (Facebook, LinkedIn, Slack, Teams, …). Image URLs must be absolute. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Paste to Markdown" />
+    <meta property="og:title" content="Paste to Markdown" />
+    <meta
+      property="og:description"
+      content="Rich text in, clean Markdown out. Paste from Google Docs, Word or any web page and get Markdown, converted in your browser."
+    />
+    <meta property="og:url" content="https://euangoddard.github.io/clipboard2markdown/" />
+    <meta property="og:image" content="https://euangoddard.github.io/clipboard2markdown/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="The Paste to Markdown clipboard logo beside the tagline “Rich text in, clean Markdown out.”"
+    />
+    <meta property="og:locale" content="en_GB" />
+
+    <!-- X / Twitter falls back to og:* for title, description and image. -->
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Paste to Markdown",
+        "alternateName": "clipboard2markdown",
+        "url": "https://euangoddard.github.io/clipboard2markdown/",
+        "description": "Convert rich text and HTML to Markdown by pasting from the clipboard. The conversion runs entirely in the browser.",
+        "image": "https://euangoddard.github.io/clipboard2markdown/og-image.png",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "license": "https://opensource.org/licenses/MIT",
+        "codeRepository": "https://github.com/euangoddard/clipboard2markdown",
+        "author": { "@type": "Person", "name": "Euan Goddard", "url": "https://github.com/euangoddard" }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
-    <noscript>Paste to Markdown needs JavaScript to convert your clipboard.</noscript>
+    <noscript>
+      <h1>Paste to Markdown</h1>
+      <p>
+        Paste to Markdown converts rich text and HTML from the clipboard to Markdown, in the browser. It needs
+        JavaScript to read and convert your clipboard; please enable it to use the converter.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
