@@ -15,9 +15,9 @@ const legacy = loadLegacy();
 
 /**
  * Inputs where the new converter intentionally differs from the original.
- * All involve whitespace around inline elements, which Turndown positions
- * from the element's text rather than its raw HTML. In each case the original
- * output was a bug (words run together, or doubled spaces).
+ * In each case the original output was a bug. They fall into four groups,
+ * each introduced by a comment below: styled bold and italic, whitespace
+ * around inline elements, no-break spaces, and tables.
  */
 const deviations: Record<string, { html: string; original: string; now: string }> = {
   // Styled bold/italic (#27, #15, #5). These add Markdown markers that the
@@ -32,6 +32,9 @@ const deviations: Record<string, { html: string; original: string; now: string }
     original: '-   can solve their problems',
     now: '-   can solve ***their*** problems',
   },
+  // Whitespace around inline elements, which Turndown positions from the
+  // element's text rather than its raw HTML (was: words run together, doubled
+  // spaces, or markers around spaces).
   'blank inline element between words keeps a single space (was: words joined)': {
     html: 'a<b> </b>b',
     original: 'ab',
@@ -41,16 +44,6 @@ const deviations: Record<string, { html: string; original: string; now: string }
     html: 'a<span> </span>b',
     original: 'a  b',
     now: 'a b',
-  },
-  'no-break spaces become ordinary spaces, collapsed as such (was: kept)': {
-    html: '<p>a&nbsp;b&nbsp;&nbsp;c</p>',
-    original: 'a\u00a0b\u00a0\u00a0c',
-    now: 'a b c',
-  },
-  'a no-break space after an escaped number becomes an ordinary space (was: kept)': {
-    html: '<p>3.&nbsp;three</p>',
-    original: '3\\.\u00a0three',
-    now: '3\\. three',
   },
   'Chrome-style styled spans keep single spacing (was: doubled)': {
     html: '<span style="color: rgb(0, 0, 0);">Hello</span><span style="color: rgb(0, 0, 0);"> </span><span style="font-weight: bold;">world</span>',
@@ -66,6 +59,18 @@ const deviations: Record<string, { html: string; original: string; now: string }
     html: '<p>a<em> b<br></em>c</p>',
     original: 'a *b\\*c',
     now: 'a *b\\\n*c',
+  },
+  // No-break spaces (#3): with Pandoc ASCII punctuation, which these tests
+  // use, they become ordinary spaces that LaTeX accepts.
+  'no-break spaces become ordinary spaces, collapsed as such (was: kept)': {
+    html: '<p>a&nbsp;b&nbsp;&nbsp;c</p>',
+    original: 'a b  c',
+    now: 'a b c',
+  },
+  'a no-break space after an escaped number becomes an ordinary space (was: kept)': {
+    html: '<p>3.&nbsp;three</p>',
+    original: '3\\. three',
+    now: '3\\. three',
   },
   // Tables (#4, #23, #21): the original wrote rows that GFM and Pandoc don't read as a table.
   'table without a <thead> takes its first row as the header (was: no delimiter row)': {

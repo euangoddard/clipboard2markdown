@@ -87,12 +87,17 @@ The suite checks that the rewrite reproduces the original behaviour.
 The original always wrote ASCII punctuation, so the parity tests run with
 it switched on:
 
--   `test/converter.test.ts` specifies every conversion rule. Each
-    expectation is asserted against both the original converter and the
-    new one.
+-   `test/converter.test.ts` specifies every conversion rule. Expectations
+    shared with the original are asserted against both the original
+    converter and the new one; the rest cover the punctuation options.
 -   `test/parity.test.ts` compares the two converters on a corpus and on
-    thousands of seeded random documents. The few intentional differences
-    are listed there; all of them fix whitespace bugs in the original.
+    thousands of seeded random documents. The intentional differences are
+    listed there, each fixing a bug in the original: styled bold and
+    italic, whitespace around inline elements, no-break spaces, and
+    tables.
+-   `test/styledFormatting.test.ts` and `test/tables.test.ts` specify
+    behaviour that is new in the rewrite: bold and italic set with inline
+    styles, and pipe tables that GFM and Pandoc read.
 -   `test/appParity.test.tsx` runs the original page and the new app
     through the same user journeys (shortcut, paste, caret placement,
     repeated pastes) and compares their state after every step.
