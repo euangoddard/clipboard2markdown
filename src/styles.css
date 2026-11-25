@@ -1,0 +1,419 @@
+/* ---------------------------------------------------------------------------
+   Design tokens — light theme by default, dark theme follows the OS setting.
+   --------------------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --bg: #f6f5f1;
+  --bg-dots: #e4e1d8;
+  --surface: #ffffff;
+  --surface-raised: #fbfaf7;
+  --border: #e2ded3;
+  --text: #1d1c1a;
+  --muted: #6b675e;
+  --accent: #2f6f5e;
+  --accent-strong: #245548;
+  --accent-soft: #e3efe9;
+  --accent-contrast: #ffffff;
+  --code-bg: #f0ede5;
+  --code-text: #9a3b26;
+  --link: #2f6f5e;
+  --watermark-board: #ebe8df;
+  --watermark-paper: #f6f5f1;
+  --shadow: 0 1px 2px rgb(29 28 26 / 0.06), 0 8px 24px rgb(29 28 26 / 0.06);
+
+  --radius: 14px;
+  --radius-small: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161716;
+    --bg-dots: #232523;
+    --surface: #1e201f;
+    --surface-raised: #242725;
+    --border: #323633;
+    --text: #ecebe6;
+    --muted: #9c9a92;
+    --accent: #6cc3a5;
+    --accent-strong: #8dd5bb;
+    --accent-soft: #1f342d;
+    --accent-contrast: #0e1a16;
+    --code-bg: #0e0f0e;
+    --code-text: #ff8f7a;
+    --link: #8fcbff;
+    --watermark-board: #111211;
+    --watermark-paper: #161716;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.3);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--bg-dots) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 2px;
+}
+
+code,
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+code {
+  padding: 0.1em 0.4em;
+  border-radius: 5px;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+
+kbd {
+  padding: 0.1em 0.45em;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Layout
+   --------------------------------------------------------------------------- */
+.app {
+  position: relative;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(24px, 6vh, 64px) 16px 48px;
+}
+
+.watermark {
+  position: fixed;
+  right: 8%;
+  bottom: 12%;
+  z-index: -1;
+  width: 18rem;
+  height: 18rem;
+  pointer-events: none;
+}
+
+.watermark .logo-board {
+  fill: var(--watermark-board);
+}
+
+.watermark .logo-paper {
+  fill: var(--watermark-paper);
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.masthead-logo {
+  flex: none;
+  width: 48px;
+  height: 48px;
+}
+
+.masthead-logo .logo-board {
+  fill: var(--accent);
+}
+
+.masthead-logo .logo-paper {
+  fill: var(--surface);
+}
+
+.masthead-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.masthead-tagline {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Instructions
+   --------------------------------------------------------------------------- */
+.hero {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding: clamp(28px, 6vw, 48px) 24px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.keys {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 64px;
+  height: 64px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-bottom-width: 4px;
+  border-radius: 12px;
+  background: var(--surface-raised);
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.key-letter {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  animation: press 2.4s ease-in-out infinite;
+}
+
+.key-plus {
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+@keyframes press {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0);
+    border-bottom-width: 4px;
+  }
+  80% {
+    transform: translateY(3px);
+    border-bottom-width: 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key-letter,
+  .spinner {
+    animation: none;
+  }
+}
+
+.hero-text {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--muted);
+}
+
+.section-title {
+  margin: 36px 0 12px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  padding: 44px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+  background: var(--surface);
+  counter-increment: step;
+}
+
+.step::before {
+  content: counter(step);
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.credit {
+  margin: 28px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Converting state
+   --------------------------------------------------------------------------- */
+.converting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 0;
+  color: var(--muted);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Result
+   --------------------------------------------------------------------------- */
+.result {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+}
+
+.toolbar-title {
+  font-weight: 700;
+}
+
+.toolbar-stats {
+  flex: 1;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.copy {
+  min-width: 84px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.copy:hover {
+  background: var(--accent-strong);
+}
+
+.copy:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.copy-done {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.output {
+  display: block;
+  width: 100%;
+  min-height: 68vh;
+  padding: 16px 18px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+  resize: vertical;
+  tab-size: 4;
+}
+
+.output:focus {
+  outline: none;
+}
+
+.hint {
+  margin: 0;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* The paste target must stay focusable and editable, but invisible. */
+.pastebin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0.01;
+}

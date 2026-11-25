@@ -1,0 +1,35 @@
+{
+  "name": "clipboard2markdown",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Easily convert richly formatted text or HTML to Markdown using the clipboard.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@solidjs/web": "^2.0.4",
+    "solid-js": "^2.0.4",
+    "turndown": "^7.2.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.13",
+    "@solidjs/babel-plugin": "^2.0.3",
+    "@solidjs/testing-library": "^1.0.0-rc.2",
+    "@solidjs/vite-plugin": "^3.0.1",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/user-event": "^14.6.13",
+    "@types/turndown": "^5.0.6",
+    "jsdom": "^31.0.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}

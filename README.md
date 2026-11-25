@@ -6,8 +6,8 @@ clipboard2markdown
 > Use the clipboard and paste to Markdown with a single keypress.
 >
 > The conversion is carried out by
-> [to-markdown](https://github.com/domchristie/to-markdown),
-> a Markdown converter running in the browser.
+> [Turndown](https://github.com/mixmark-io/turndown) (formerly
+> to-markdown), a Markdown converter running in the browser.
 
 Demo
 ----
@@ -20,23 +20,61 @@ Demo
 
 ![Screencast](screencast.gif)
 
+(The screencast shows the original interface.)
+
 Usage
 -----
 
-Open [index.html](index.html) in a favorite browser and hit `Ctrl+C`
-(or `⌘+C` on Mac).
+Open the app, copy some rich text and press `Ctrl+V` (or `⌘+V` on Mac)
+anywhere on the page.
 
-To copy the converted Markdown to the clipboard, press `Ctrl+A`
-followed by `Ctrl+C` (or `⌘+A` and `⌘+C` on Mac).
+The converted Markdown is selected, ready to copy with `Ctrl+C`
+(or `⌘+C`), or use the **Copy** button.
 
-One can paste multiple times. This overwrites the previous conversion.
+One can paste multiple times. A paste replaces the selected text, so
+pasting straight after a conversion overwrites it; place the cursor in
+the output first to insert at that point instead.
 
-### Tested browsers
+Development
+-----------
 
--   Chrome 33 (Linux and OS X)
--   Firefox 27 (Linux)
--   Safari 5 (OS X)
--   Internet Explorer 11 (Windows)
+The app is built with [Solid](https://www.solidjs.com/) 2 and
+[Vite](https://vite.dev/), and tested with [Vitest](https://vitest.dev/).
+
+```sh
+npm install
+npm run dev        # start a development server
+npm test           # run the test suite
+npm run typecheck  # type-check with TypeScript
+npm run build      # production build in dist/
+```
+
+### Layout
+
+-   `src/converter/` holds the HTML to Markdown conversion: Turndown
+    configured with the original Pandoc, GFM and Markdown rules, plus the
+    Pandoc smart-punctuation clean-up.
+-   `src/App.tsx` is the page: the paste shortcut, the hidden paste target,
+    and the output.
+-   `legacy/` is the original implementation, kept unmodified as a test
+    oracle.
+
+### Tests
+
+The suite checks that the rewrite reproduces the original behaviour:
+
+-   `test/converter.test.ts` specifies every conversion rule. Each
+    expectation is asserted against both the original converter and the
+    new one.
+-   `test/parity.test.ts` compares the two converters on a corpus and on
+    thousands of seeded random documents. The few intentional differences
+    are listed there; all of them fix whitespace bugs in the original.
+-   `test/appParity.test.tsx` runs the original page and the new app
+    through the same user journeys (shortcut, paste, caret placement,
+    repeated pastes) and compares their state after every step.
+-   `test/app.test.tsx`, `test/insertText.test.ts`,
+    `test/pasteShortcut.test.ts` and `test/smartPunctuation.test.ts`
+    cover the individual pieces.
 
 About
 -----
@@ -49,8 +87,9 @@ The original version used
 [Himanshu Gilani](https://github.com/hgilani).
 [Vegard Øye](https://github.com/epsil) ported it to
 [to-markdown](https://github.com/domchristie/to-markdown) by
-[Dom Christie](https://github.com/domchristie). The HTML template
-is based on [Bootstrap](http://getbootstrap.com/).
+[Dom Christie](https://github.com/domchristie), which has since become
+[Turndown](https://github.com/mixmark-io/turndown). Version 2 is a
+rewrite in [Solid](https://www.solidjs.com/) on Turndown.
 
 ### License
 
