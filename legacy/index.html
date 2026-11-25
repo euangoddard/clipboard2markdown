@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Paste to Markdown</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <link href="favicon.ico" rel="icon" type="image/x-icon">
+        <link rel="stylesheet" href="bootstrap.css">
+        <script src="to-markdown.js"></script>
+        <script src="clipboard2markdown.js"></script>
+        <style>
+            h2 {
+                font-size: 22px;
+                font-style: italic;
+            }
+            body {
+                background-attachment: fixed;
+                background-image: url('background.svg');
+                background-position: right 10% bottom 20%;
+                background-repeat: no-repeat;
+                background-size: 20em;
+                margin-bottom: 10vh;
+                margin-top: 10vh;
+            }
+            #pastebin {
+                opacity: 0.01;
+                width: 100%;
+                height: 1px;
+                overflow: hidden;
+            }
+            #output {
+                border: none;
+                background: transparent;
+                font-family: Consolas, "Liberation Mono", Courier, monospace;
+                font-size: 13px;
+                line-height: 19px;
+                min-height: 78vh;
+                overflow: auto;
+                padding: 6px 10px;
+                resize: none;
+                width: 100%;
+            }
+            @media (prefers-color-scheme: dark) {
+                body { 
+                    background-image: url('background-dark.svg');
+                    background-color: #222; 
+                    color:white; 
+                }
+                code {
+                    color: #ff7a9c;
+                    background-color: #0e0609;
+                }
+                a {
+                    color: #8fcbff;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <section id="info">
+                <h1>Paste to Markdown</h1>
+                <h2>Instructions</h2>
+                <ol>
+                    <li>Find the text to convert to Markdown (<i>e.g.</i>, in another browser tab)</li>
+                    <li>Copy it to the clipboard (<code>Ctrl+C</code>, or <code>&#8984;+C</code> on Mac)</li>
+                    <li>Paste it into this window (<code>Ctrl+V</code>, or <code>&#8984;+V</code> on Mac)</li>
+                    <li>The converted Markdown will appear!</li>
+                </ol>
+                <p>The conversion is carried out by <a href="https://github.com/domchristie/to-markdown">to-markdown</a>, a Markdown converter written in JavaScript and running locally in the browser.</p>
+            </section>
+            <div contenteditable="true" id="pastebin"></div>
+            <section class="hidden" id="wrapper">
+                <textarea id="output"></textarea>
+            </section>
+        </div>
+    </body>
+</html>

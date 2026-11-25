@@ -1,0 +1,170 @@
+import { createMemo, createSignal, flush, onSettled } from 'solid-js';
+import type { JSX } from '@solidjs/web';
+import { htmlToMarkdown } from './converter';
+import { insertText } from './insertText';
+import { isPasteShortcut } from './pasteShortcut';
+import { Logo } from './Logo';
+
+/**
+ * How long to wait after the `paste` event before reading the pasted HTML.
+ * The browser inserts the clipboard contents into the paste target after the
+ * event has been dispatched, so the content is read on a short delay.
+ */
+export const PASTE_SETTLE_DELAY_MS = 200;
+
+/** Instructions → (Ctrl+V pressed) waiting for paste → converted Markdown shown. */
+export type Phase = 'instructions' | 'pasting' | 'result';
+
+export interface AppProps {
+  /** HTML → Markdown conversion; defaults to the clipboard2markdown converter. */
+  convert?: (html: string) => string;
+  /** Writes text to the system clipboard; defaults to the async Clipboard API. */
+  copyToClipboard?: (text: string) => Promise<void>;
+}
+
+const COPIED_FEEDBACK_MS = 2000;
+
+export function App(props: AppProps): JSX.Element {
+  const [phase, setPhase] = createSignal<Phase>('instructions');
+  const [markdown, setMarkdown] = createSignal('');
+  const [copied, setCopied] = createSignal(false);
+  const stats = createMemo(() => {
+    const text = markdown();
+    return { lines: text ? text.split('\n').length : 0, characters: text.length };
+  });
+
+  let pastebin!: HTMLDivElement;
+  let output!: HTMLTextAreaElement;
+  const timers = new Set<ReturnType<typeof setTimeout>>();
+  const later = (callback: () => void, delay: number) => {
+    const timer = setTimeout(() => {
+      timers.delete(timer);
+      callback();
+    }, delay);
+    timers.add(timer);
+  };
+
+  // Ctrl+V / ⌘+V anywhere on the page: redirect the paste into the hidden,
+  // content-editable paste target so the browser hands us rich HTML.
+  onSettled(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!isPasteShortcut(event)) return;
+      pastebin.innerHTML = '';
+      pastebin.focus();
+      setPhase('pasting');
+      flush();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      timers.forEach(clearTimeout);
+    };
+  });
+
+  const onPaste = () => {
+    later(() => {
+      const convert = props.convert ?? htmlToMarkdown;
+      insertText(output, convert(pastebin.innerHTML));
+      setMarkdown(output.value);
+      setPhase('result');
+      flush(); // reveal the output before focusing it
+      output.focus();
+      output.select();
+    }, PASTE_SETTLE_DELAY_MS);
+  };
+
+  const copy = async () => {
+    const write = props.copyToClipboard ?? ((text: string) => navigator.clipboard.writeText(text));
+    await write(output.value);
+    setCopied(true);
+    later(() => setCopied(false), COPIED_FEEDBACK_MS);
+  };
+
+  return (
+    <div class="app">
+      <Logo class="watermark" />
+
+      <header class="masthead">
+        <Logo class="masthead-logo" />
+        <div>
+          <h1 class="masthead-title">Paste to Markdown</h1>
+          <p class="masthead-tagline">Rich text in, clean Markdown out.</p>
+        </div>
+      </header>
+
+      <main class="stage">
+        <section id="info" class="instructions" hidden={phase() !== 'instructions'} aria-labelledby="instructions-title">
+          <div class="hero">
+            <div class="keys" aria-hidden="true">
+              <kbd class="key">Ctrl</kbd>
+              <span class="key-plus">+</span>
+              <kbd class="key key-letter">V</kbd>
+            </div>
+            <p class="hero-text">
+              Copy something rich, then press <kbd>Ctrl+V</kbd> (or <kbd>⌘+V</kbd> on Mac) anywhere on this page.
+            </p>
+          </div>
+
+          <h2 id="instructions-title" class="section-title">
+            Instructions
+          </h2>
+          <ol class="steps">
+            <li class="step">
+              Find the text to convert to Markdown (<i>e.g.</i>, in another browser tab)
+            </li>
+            <li class="step">
+              Copy it to the clipboard (<code>Ctrl+C</code>, or <code>&#8984;+C</code> on Mac)
+            </li>
+            <li class="step">
+              Paste it into this window (<code>Ctrl+V</code>, or <code>&#8984;+V</code> on Mac)
+            </li>
+            <li class="step">The converted Markdown will appear!</li>
+          </ol>
+          <p class="credit">
+            The conversion is carried out by{' '}
+            <a href="https://github.com/mixmark-io/turndown">Turndown</a>, an HTML to Markdown converter written in
+            JavaScript and running locally in the browser.
+          </p>
+        </section>
+
+        <p class="converting" role="status" hidden={phase() !== 'pasting'}>
+          <span class="spinner" aria-hidden="true" />
+          Converting…
+        </p>
+
+        <section id="wrapper" class="result" hidden={phase() !== 'result'} aria-label="Converted Markdown">
+          <div class="toolbar">
+            <span class="toolbar-title">Markdown</span>
+            <span class="toolbar-stats">
+              {stats().lines} {stats().lines === 1 ? 'line' : 'lines'} · {stats().characters}{' '}
+              {stats().characters === 1 ? 'character' : 'characters'}
+            </span>
+            <button type="button" class={['copy', { 'copy-done': copied() }]} onClick={copy}>
+              {copied() ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+          <textarea
+            id="output"
+            ref={output}
+            class="output"
+            aria-label="Markdown output"
+            spellcheck={false}
+            onInput={(event) => setMarkdown(event.currentTarget.value)}
+          />
+          <p class="hint">
+            Paste again to insert at the cursor, or select everything first to replace it.
+          </p>
+        </section>
+
+        <div
+          id="pastebin"
+          ref={pastebin}
+          class="pastebin"
+          contenteditable="true"
+          aria-label="Paste target"
+          onPaste={onPaste}
+        />
+      </main>
+    </div>
+  );
+}
