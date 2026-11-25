@@ -1,9 +1,10 @@
 import { createMemo, createSignal, flush, onSettled } from 'solid-js';
 import type { JSX } from '@solidjs/web';
-import { htmlToMarkdown } from './converter';
+import { htmlToMarkdown, type Punctuation } from './converter';
 import { insertText } from './insertText';
 import { isPasteShortcut } from './pasteShortcut';
 import { Logo } from './Logo';
+import { loadPunctuation, savePunctuation } from './punctuationPreference';
 
 /**
  * How long to wait after the `paste` event before reading the pasted HTML.
@@ -17,9 +18,11 @@ export type Phase = 'instructions' | 'pasting' | 'result';
 
 export interface AppProps {
   /** HTML → Markdown conversion; defaults to the clipboard2markdown converter. */
-  convert?: (html: string) => string;
+  convert?: (html: string, punctuation: Punctuation) => string;
   /** Writes text to the system clipboard; defaults to the async Clipboard API. */
   copyToClipboard?: (text: string) => Promise<void>;
+  /** Returns the storage that remembers the user's choices; defaults to `localStorage`. */
+  storage?: () => Storage;
 }
 
 const COPIED_FEEDBACK_MS = 2000;
@@ -28,6 +31,8 @@ export function App(props: AppProps): JSX.Element {
   const [phase, setPhase] = createSignal<Phase>('instructions');
   const [markdown, setMarkdown] = createSignal('');
   const [copied, setCopied] = createSignal(false);
+  const storage = () => props.storage?.() ?? localStorage;
+  const [punctuation, setPunctuation] = createSignal(loadPunctuation(storage));
   const stats = createMemo(() => {
     const text = markdown();
     return { lines: text ? text.split('\n').length : 0, characters: text.length };
@@ -64,13 +69,19 @@ export function App(props: AppProps): JSX.Element {
   const onPaste = () => {
     later(() => {
       const convert = props.convert ?? htmlToMarkdown;
-      insertText(output, convert(pastebin.innerHTML));
+      insertText(output, convert(pastebin.innerHTML, punctuation()));
       setMarkdown(output.value);
       setPhase('result');
       flush(); // reveal the output before focusing it
       output.focus();
       output.select();
     }, PASTE_SETTLE_DELAY_MS);
+  };
+
+  const choosePunctuation = (event: Event & { currentTarget: HTMLInputElement }) => {
+    const chosen: Punctuation = event.currentTarget.checked ? 'ascii' : 'typographic';
+    setPunctuation(chosen);
+    savePunctuation(storage, chosen);
   };
 
   const copy = async () => {
@@ -89,6 +100,25 @@ export function App(props: AppProps): JSX.Element {
         <div>
           <h1 class="masthead-title">Paste to Markdown</h1>
           <p class="masthead-tagline">Rich text in, clean Markdown out.</p>
+        </div>
+        <div class="option">
+          <input
+            id="ascii-punctuation"
+            class="switch"
+            type="checkbox"
+            role="switch"
+            checked={punctuation() === 'ascii'}
+            aria-describedby="ascii-punctuation-hint"
+            onChange={choosePunctuation}
+          />
+          <div>
+            <label for="ascii-punctuation" class="option-label">
+              Pandoc ASCII punctuation
+            </label>
+            <p id="ascii-punctuation-hint" class="option-hint">
+              “Quotes” – — … become "Quotes" -- --- ... from the next paste
+            </p>
+          </div>
         </div>
       </header>
 

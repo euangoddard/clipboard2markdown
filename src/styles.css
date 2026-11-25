@@ -137,6 +137,7 @@ kbd {
 
 .masthead {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
   margin-bottom: 28px;
@@ -167,6 +168,90 @@ kbd {
 .masthead-tagline {
   margin: 2px 0 0;
   color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Options
+   --------------------------------------------------------------------------- */
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 19rem;
+  margin-left: auto;
+}
+
+.option-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.option-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.switch {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  margin: 2px 0 0;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.switch::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.switch:checked {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.switch:checked::before {
+  background: var(--accent-contrast);
+  transform: translateX(16px);
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch,
+  .switch::before {
+    transition: none;
+  }
+}
+
+/* Forced colours drop the backgrounds that show the switch's state. */
+@media (forced-colors: active) {
+  .switch {
+    appearance: auto;
+    width: auto;
+    height: auto;
+  }
+
+  .switch::before {
+    content: none;
+  }
 }
 
 /* ---------------------------------------------------------------------------

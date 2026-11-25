@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@solidjs/testing-library';
 import { flush } from 'solid-js';
 import { App, PASTE_SETTLE_DELAY_MS, type AppProps } from '../src/App';
+import { PUNCTUATION_STORAGE_KEY } from '../src/punctuationPreference';
 
 function setup(props: AppProps = {}) {
   const result = render(() => <App {...props} />);
@@ -14,6 +15,7 @@ function setup(props: AppProps = {}) {
     pastebin: $('#pastebin'),
     status: screen.getByRole('status', { hidden: true }),
     copyButton: () => screen.getByRole('button', { name: /cop/i, hidden: true }),
+    asciiSwitch: screen.getByRole<HTMLInputElement>('switch', { name: 'Pandoc ASCII punctuation' }),
   };
 
   /** Presses Ctrl+V (or ⌘+V), as the user does to paste. */
@@ -42,6 +44,8 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
+  localStorage.clear();
+  vi.restoreAllMocks();
   vi.useRealTimers();
 });
 
@@ -182,7 +186,7 @@ describe('pasting', () => {
     const convert = vi.fn(() => 'converted!');
     const { ui, paste } = setup({ convert });
     paste('<p>x</p>');
-    expect(convert).toHaveBeenCalledWith('<p>x</p>');
+    expect(convert).toHaveBeenCalledWith('<p>x</p>', 'typographic');
     expect(ui.output.value).toBe('converted!');
   });
 
@@ -201,6 +205,83 @@ describe('pasting', () => {
     unmount();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'v', ctrlKey: true, bubbles: true }));
     expect(focus).not.toHaveBeenCalled();
+  });
+});
+
+describe('punctuation', () => {
+  const TYPOGRAPHIC_HTML = '<p>“Wait” — it’s…</p>';
+  const TYPOGRAPHIC_MARKDOWN = '“Wait” — it’s…';
+  const ASCII_MARKDOWN = `"Wait" --- it's...`;
+
+  const blockedStorage = (): Storage => {
+    throw new DOMException('The operation is insecure.', 'SecurityError');
+  };
+
+  it('keeps typographic punctuation by default', () => {
+    const { ui, paste } = setup();
+    expect(ui.asciiSwitch).not.toBeChecked();
+    paste(TYPOGRAPHIC_HTML);
+    expect(ui.output.value).toBe(TYPOGRAPHIC_MARKDOWN);
+  });
+
+  it('describes what the switch does', () => {
+    const { ui } = setup();
+    expect(ui.asciiSwitch).toHaveAccessibleDescription('“Quotes” – — … become "Quotes" -- --- ... from the next paste');
+  });
+
+  it('writes Pandoc ASCII punctuation from the next paste once switched on, and remembers it', () => {
+    const { ui, paste } = setup();
+    paste(TYPOGRAPHIC_HTML);
+    ui.asciiSwitch.click();
+    flush();
+
+    expect(ui.output.value).toBe(TYPOGRAPHIC_MARKDOWN);
+    expect(localStorage.getItem(PUNCTUATION_STORAGE_KEY)).toBe('ascii');
+    paste(TYPOGRAPHIC_HTML);
+    expect(ui.output.value).toBe(ASCII_MARKDOWN);
+  });
+
+  it('goes back to typographic punctuation once switched off, and remembers it', () => {
+    localStorage.setItem(PUNCTUATION_STORAGE_KEY, 'ascii');
+    const { ui, paste } = setup();
+    ui.asciiSwitch.click();
+    flush();
+
+    expect(ui.asciiSwitch).not.toBeChecked();
+    expect(localStorage.getItem(PUNCTUATION_STORAGE_KEY)).toBe('typographic');
+    paste(TYPOGRAPHIC_HTML);
+    expect(ui.output.value).toBe(TYPOGRAPHIC_MARKDOWN);
+  });
+
+  it('restores the remembered choice', () => {
+    localStorage.setItem(PUNCTUATION_STORAGE_KEY, 'ascii');
+    const { ui, paste } = setup();
+    expect(ui.asciiSwitch).toBeChecked();
+    paste(TYPOGRAPHIC_HTML);
+    expect(ui.output.value).toBe(ASCII_MARKDOWN);
+  });
+
+  it('still switches, for the session, when the storage is blocked', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { ui, paste } = setup({ storage: blockedStorage });
+    expect(ui.asciiSwitch).not.toBeChecked();
+
+    ui.asciiSwitch.click();
+    flush();
+    paste(TYPOGRAPHIC_HTML);
+
+    expect(ui.asciiSwitch).toBeChecked();
+    expect(ui.output.value).toBe(ASCII_MARKDOWN);
+    expect(warn).toHaveBeenCalledTimes(2);
+  });
+
+  it('is passed to the injected converter', () => {
+    const convert = vi.fn(() => 'converted!');
+    const { paste, ui } = setup({ convert });
+    ui.asciiSwitch.click();
+    flush();
+    paste('<p>x</p>');
+    expect(convert).toHaveBeenCalledWith('<p>x</p>', 'ascii');
   });
 });
 

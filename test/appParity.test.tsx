@@ -4,13 +4,15 @@
  *
  * Both are driven through identical user journeys, and after every step
  * their observable state is compared: which panels are visible, what has
- * focus, the Markdown in the output and the selection within it.
+ * focus, the Markdown in the output and the selection within it. The new app
+ * has Pandoc ASCII punctuation switched on, as the original always wrote it.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render } from '@solidjs/testing-library';
 import { flush } from 'solid-js';
 import { App, PASTE_SETTLE_DELAY_MS } from '../src/App';
 import { mountLegacyPage } from './legacy/oracle';
+import { PUNCTUATION_STORAGE_KEY } from '../src/punctuationPreference';
 
 interface Page {
   document: Document;
@@ -69,6 +71,7 @@ function observe(page: Page) {
 }
 
 function mountNewApp(): Page {
+  localStorage.setItem(PUNCTUATION_STORAGE_KEY, 'ascii');
   const { container } = render(() => <App />);
   flush();
   const $ = <T extends HTMLElement>(selector: string) => container.querySelector(selector) as T;
@@ -126,6 +129,7 @@ describe('the new app behaves like the original page', () => {
 
   afterEach(() => {
     cleanup();
+    localStorage.clear();
     vi.useRealTimers();
   });
 
