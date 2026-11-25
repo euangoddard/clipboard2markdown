@@ -1,6 +1,6 @@
 import TurndownService from 'turndown';
 import { createRules, isLegacyBlank, ruleFor } from './rules';
-import { cleanUpMarkdown, type Punctuation } from './cleanUp';
+import { cleanUpMarkdown, NO_BREAK_SPACES, type Punctuation } from './cleanUp';
 
 export { cleanUpMarkdown, type Punctuation } from './cleanUp';
 
@@ -64,6 +64,21 @@ function trimWhitespaceBeforeLineBreaks(root: HTMLElement): void {
   }
 }
 
+/**
+ * Turns no-break spaces outside code into ordinary spaces, for Turndown to
+ * collapse and trim like any other whitespace: a paragraph indented with
+ * `&nbsp;` must not become an indented code block. Within code, spaces are
+ * content, so the Pandoc clean-up replaces those one for one instead.
+ */
+function replaceNoBreakSpacesInProse(root: HTMLElement): void {
+  const walker = root.ownerDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const text = node as Text;
+    if (text.parentElement?.closest('pre, code, kbd, samp, tt')) continue;
+    text.data = text.data.replace(NO_BREAK_SPACES, ' ');
+  }
+}
+
 /** Final tidy-up the original to-markdown applied to its output. */
 function tidy(markdown: string): string {
   return markdown
@@ -77,6 +92,7 @@ export function htmlToMarkdown(html: string, punctuation: Punctuation): string {
   const lineBreak = unusedPrivateUseCharacter(html);
   // Parse exactly as the original did: as a full document, converting <body>.
   const body = new DOMParser().parseFromString(escapeOrderedListTriggers(html), 'text/html').body;
+  if (punctuation === 'ascii') replaceNoBreakSpacesInProse(body);
   trimWhitespaceBeforeLineBreaks(body);
   const markdown = createTurndownService(lineBreak).turndown(body).replaceAll(lineBreak, '\n');
   return cleanUpMarkdown(tidy(markdown), punctuation);

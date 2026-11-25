@@ -10,6 +10,7 @@ describe('cleanUpMarkdown', () => {
       ['dashes and the minus sign', 'a–b a―b a—b −1'],
       ['the ellipsis', 'wait…'],
       ['bullet glyphs within a line', 'one • two · three ▪ four'],
+      ['no-break spaces', 'a\u00a0b\u202fc'],
     ])('keeps %s', (_, text) => {
       expect(cleanUpMarkdown(text, 'typographic')).toBe(text);
     });
@@ -42,6 +43,10 @@ describe('cleanUpMarkdown', () => {
 
     it('drops a bullet glyph alone on a line', () => {
       expect(cleanUpMarkdown('a\n•\nb', 'ascii')).toBe('a\nb');
+    });
+
+    it('turns no-break spaces into ordinary spaces one for one, then trims them as such', () => {
+      expect(cleanUpMarkdown('a\u00a0\u00a0b\u202fc\u00a0\nd', 'ascii')).toBe('a  b c\nd');
     });
   });
 

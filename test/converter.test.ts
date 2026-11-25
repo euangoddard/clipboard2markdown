@@ -61,10 +61,6 @@ describe('paragraphs, whitespace and line breaks', () => {
     expectConversion('<p>  lots   of\n\n spaces\tand\ttabs  </p>', 'lots of spaces and tabs');
   });
 
-  it('keeps non-breaking spaces', () => {
-    expectConversion('<p>a&nbsp;b</p>', 'a b');
-  });
-
   it('passes plain text through unchanged', () => {
     expectConversion('just some text', 'just some text');
   });
@@ -232,7 +228,7 @@ describe('lists', () => {
 
   it('escapes text that would otherwise start an ordered list', () => {
     expectConversion('<p>1. not a list</p><p>2015. A year</p>', '1\\. not a list\n\n2015\\. A year');
-    expectConversion('<p>3.&nbsp;three</p>', '3\\. three');
+    expect(htmlToMarkdown('<p>3.&nbsp;three</p>', 'typographic')).toBe('3\\.\u00a0three');
   });
 
   it('does not escape numbers in the middle of a line', () => {
@@ -325,6 +321,10 @@ describe('typographic punctuation', () => {
   it('turns bullet glyphs that start a line into list markers', () => {
     expect(htmlToMarkdown('<p>•&nbsp;one — first</p><p>·&nbsp;two</p>', 'typographic')).toBe('-\u00a0one — first\n\n-\u00a0two');
   });
+
+  it('keeps no-break spaces', () => {
+    expect(htmlToMarkdown('<p>foo&nbsp;<i>bar</i> 10\u202f000</p>', 'typographic')).toBe('foo\u00a0*bar* 10\u202f000');
+  });
 });
 
 describe('ASCII punctuation (Pandoc)', () => {
@@ -338,6 +338,25 @@ describe('ASCII punctuation (Pandoc)', () => {
 
   it('turns bullets into hyphens and the ellipsis into three dots', () => {
     expectConversion('<p>• one · two ▪ three…</p>', '- one - two - three...');
+  });
+
+  // The original kept no-break spaces, which LaTeX may reject, so these are
+  // not checked against it.
+  it.each([
+    ['between words become spaces', '<p>foo&nbsp;<i>bar</i> baz</p>', 'foo *bar* baz'],
+    ['between digit groups (narrow) become spaces', '<p>10\u202f000</p>', '10 000'],
+    ['in runs collapse like spaces', '<p>a&nbsp;b&nbsp;&nbsp;&nbsp;c</p>', 'a b c'],
+    ['indenting a paragraph are dropped', '<p>a</p><p>&nbsp;&nbsp;&nbsp;&nbsp;b</p>', 'a\n\nb'],
+    ['indenting a line after a line break are dropped', '<p>a<br>&nbsp;&nbsp;&nbsp;&nbsp;b</p>', 'a\\\nb'],
+    ['indenting a paragraph in a list item leave its indentation intact', '<ul><li>one<p>&nbsp;&nbsp;&nbsp;&nbsp;two</p></li></ul>', '-   one\n\n    two'],
+    ['after bullet glyphs become spaces, making a list', '<p>•&nbsp;one</p><p>·&nbsp;two</p>', '- one\n\n- two'],
+    ['after an escaped number become spaces', '<p>3.&nbsp;three</p>', '3\\. three'],
+    ['in a code block become spaces one for one', '<pre><code>if x:\n&nbsp;&nbsp;&nbsp;&nbsp;y&nbsp;&nbsp;= 1</code></pre>', '```\nif x:\n    y  = 1\n```'],
+    ['in a code block in a list item become spaces one for one', '<ul><li><pre><code>a\n&nbsp;&nbsp;b</code></pre></li></ul>', '-   ```\n    a\n      b\n    ```'],
+    ['in inline code become spaces one for one', '<p><code>a&nbsp;&nbsp;b</code></p>', '`a  b`'],
+    ['in preformatted text become spaces one for one', '<pre>a\n&nbsp;&nbsp;b</pre>', 'a\n  b'],
+  ])('no-break spaces %s', (_, html, markdown) => {
+    expect(htmlToMarkdown(html, 'ascii')).toBe(markdown);
   });
 });
 
