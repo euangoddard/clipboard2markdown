@@ -18,9 +18,7 @@ Demo
 
 ### Video
 
-![Screencast](screencast.gif)
-
-(The screencast shows the original interface.)
+![Screencast: copying a formatted article, pasting it into the app and copying the converted Markdown](screencast.webp)
 
 Usage
 -----
