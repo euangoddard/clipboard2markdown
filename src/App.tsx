@@ -238,6 +238,8 @@ export function App(props: AppProps): JSX.Element {
           ref={pastebin}
           class="pastebin"
           contenteditable="true"
+          role="textbox"
+          aria-multiline="true"
           aria-label="Paste target"
           onPaste={onPaste}
         />
