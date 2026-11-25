@@ -20,6 +20,18 @@ const legacy = loadLegacy();
  * output was a bug (words run together, or doubled spaces).
  */
 const deviations: Record<string, { html: string; original: string; now: string }> = {
+  // Styled bold/italic (#27, #15, #5). These add Markdown markers that the
+  // original dropped, so only the text is compared with the original's.
+  'Google Docs styled bold and italic are kept, its normal-weight <b> wrapper is not bold (was: stray "**")': {
+    html: '<b style="font-weight:normal;" id="docs-internal-guid-abc"><p><span style="font-weight:400;">details </span><span style="font-style:italic;">for</span><span style="font-weight:700;"> bold</span><span style="font-weight:400;"> the writer</span></p></b>',
+    original: '**\n\ndetails for bold the writer\n\n**',
+    now: 'details *for* **bold** the writer',
+  },
+  'OneNote styled bold italic is kept (was: plain text)': {
+    html: "<ul><li><span style='font-family:Calibri'>can solve </span><span style='font-weight:bold;font-style:italic;font-family:Calibri'>their</span><span style='font-family:Calibri'> problems</span></li></ul>",
+    original: '-   can solve their problems',
+    now: '-   can solve ***their*** problems',
+  },
   'blank inline element between words keeps a single space (was: words joined)': {
     html: 'a<b> </b>b',
     original: 'ab',
@@ -43,7 +55,7 @@ const deviations: Record<string, { html: string; original: string; now: string }
   'Chrome-style styled spans keep single spacing (was: doubled)': {
     html: '<span style="color: rgb(0, 0, 0);">Hello</span><span style="color: rgb(0, 0, 0);"> </span><span style="font-weight: bold;">world</span>',
     original: 'Hello  world',
-    now: 'Hello world',
+    now: 'Hello **world**',
   },
   'whitespace inside nested inline elements stays outside the markers (was: invalid "** *x***")': {
     html: '<p><b><i>x </i></b>y</p>',
@@ -93,7 +105,7 @@ describe('documented deviations from the original converter', () => {
     it(name, () => {
       expect(legacy.convert(html), 'original output').toBe(original);
       expect(htmlToMarkdown(html, 'ascii'), 'new output').toBe(now);
-      expect(textSignature(now)).toBe(textSignature(original));
+      expect(textSignature(now).replaceAll('*', '')).toBe(textSignature(original).replaceAll('*', ''));
     });
   }
 });

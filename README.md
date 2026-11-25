@@ -38,6 +38,9 @@ One can paste multiple times. A paste replaces the selected text, so
 pasting straight after a conversion overwrites it; place the cursor in
 the output first to insert at that point instead.
 
+Bold and italic are kept whether the source marks them up or sets them
+with styles, as Google Docs, Word and OneNote do.
+
 Typographic punctuation (“curly quotes”, en and em dashes, the
 ellipsis) and no-break spaces are kept as pasted. Switch on **Pandoc
 ASCII punctuation** to write the punctuation the way [Pandoc's smart

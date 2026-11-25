@@ -1,6 +1,7 @@
 import TurndownService from 'turndown';
 import { createRules, isLegacyBlank, ruleFor } from './rules';
 import { cleanUpMarkdown, NO_BREAK_SPACES, type Punctuation } from './cleanUp';
+import { convertStyledFormatting } from './styledFormatting';
 
 export { cleanUpMarkdown, type Punctuation } from './cleanUp';
 
@@ -94,6 +95,7 @@ export function htmlToMarkdown(html: string, punctuation: Punctuation): string {
   const body = new DOMParser().parseFromString(escapeOrderedListTriggers(html), 'text/html').body;
   if (punctuation === 'ascii') replaceNoBreakSpacesInProse(body);
   trimWhitespaceBeforeLineBreaks(body);
+  convertStyledFormatting(body);
   const markdown = createTurndownService(lineBreak).turndown(body).replaceAll(lineBreak, '\n');
   return cleanUpMarkdown(tidy(markdown), punctuation);
 }
