@@ -78,6 +78,23 @@ npm run build      # production build in dist/
     output.
 -   `src/punctuationPreference.ts` remembers the punctuation choice in
     `localStorage`.
+-   `index.html` carries the search and link-preview metadata: the
+    canonical URL, Open Graph and Twitter card tags, and JSON-LD. Open
+    Graph needs absolute URLs, so the deployed address
+    `https://euangoddard.github.io/clipboard2markdown/` is written out
+    there and in `public/sitemap.xml`; change both if the site moves.
+-   `public/` is published as is: icons, the web app manifest, the
+    sitemap and the link-preview image. `public/icon.svg` follows the
+    light or dark theme.
+-   `design/` holds the sources of the PNG images in `public/`. After
+    editing one, render the PNGs again:
+
+    ```sh
+    rsvg-convert -w 1200 -h 630 design/og-image.svg -o public/og-image.png
+    rsvg-convert -w 180 -h 180 design/app-icon.svg -o public/apple-touch-icon.png
+    rsvg-convert -w 192 -h 192 design/app-icon.svg -o public/icon-192.png
+    rsvg-convert -w 512 -h 512 design/app-icon.svg -o public/icon-512.png
+    ```
 -   `legacy/` is the original implementation, kept unmodified as a test
     oracle.
 
@@ -104,6 +121,8 @@ it switched on:
 -   `test/app.test.tsx`, `test/insertText.test.ts`,
     `test/pasteShortcut.test.ts`, `test/cleanUp.test.ts` and
     `test/punctuationPreference.test.ts` cover the individual pieces.
+-   `test/seo.test.ts` checks the page metadata, and that every icon,
+    image and manifest it links to is published.
 
 About
 -----
