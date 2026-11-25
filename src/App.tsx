@@ -132,7 +132,7 @@ export function App(props: AppProps): JSX.Element {
               Pandoc ASCII punctuation
             </label>
             <p id="ascii-punctuation-hint" class="option-hint">
-              “Quotes” – — … become "Quotes" -- --- ... from the next paste
+              “Quotes” – — … become "Quotes" -- --- ... and no-break spaces become ordinary spaces from the next paste
             </p>
           </div>
         </div>

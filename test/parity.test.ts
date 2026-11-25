@@ -30,6 +30,16 @@ const deviations: Record<string, { html: string; original: string; now: string }
     original: 'a  b',
     now: 'a b',
   },
+  'no-break spaces become ordinary spaces, collapsed as such (was: kept)': {
+    html: '<p>a&nbsp;b&nbsp;&nbsp;c</p>',
+    original: 'a\u00a0b\u00a0\u00a0c',
+    now: 'a b c',
+  },
+  'a no-break space after an escaped number becomes an ordinary space (was: kept)': {
+    html: '<p>3.&nbsp;three</p>',
+    original: '3\\.\u00a0three',
+    now: '3\\. three',
+  },
   'Chrome-style styled spans keep single spacing (was: doubled)': {
     html: '<span style="color: rgb(0, 0, 0);">Hello</span><span style="color: rgb(0, 0, 0);"> </span><span style="font-weight: bold;">world</span>',
     original: 'Hello  world',

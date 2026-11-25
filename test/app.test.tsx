@@ -323,7 +323,7 @@ describe('punctuation', () => {
 
   it('describes what the switch does', () => {
     const { ui } = setup();
-    expect(ui.asciiSwitch).toHaveAccessibleDescription('“Quotes” – — … become "Quotes" -- --- ... from the next paste');
+    expect(ui.asciiSwitch).toHaveAccessibleDescription('“Quotes” – — … become "Quotes" -- --- ... and no-break spaces become ordinary spaces from the next paste');
   });
 
   it('writes Pandoc ASCII punctuation from the next paste once switched on, and remembers it', () => {

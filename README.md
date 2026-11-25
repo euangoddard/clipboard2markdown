@@ -39,10 +39,11 @@ pasting straight after a conversion overwrites it; place the cursor in
 the output first to insert at that point instead.
 
 Typographic punctuation (“curly quotes”, en and em dashes, the
-ellipsis) is kept as pasted. Switch on **Pandoc ASCII punctuation** to
-write it the way [Pandoc's smart
+ellipsis) and no-break spaces are kept as pasted. Switch on **Pandoc
+ASCII punctuation** to write the punctuation the way [Pandoc's smart
 extension](http://pandoc.org/README.html#smart-punctuation) expects
-instead (`"`, `'`, `--`, `---`, `...`). The browser remembers the choice.
+instead (`"`, `'`, `--`, `---`, `...`), and no-break spaces as ordinary
+spaces, which LaTeX accepts. The browser remembers the choice.
 
 Development
 -----------

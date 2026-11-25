@@ -4,11 +4,15 @@ export type Punctuation =
   | 'typographic'
   /**
    * Replaced with the ASCII forms that Pandoc turns back into typographic
-   * punctuation (http://pandoc.org/README.html#smart-punctuation).
+   * punctuation (http://pandoc.org/README.html#smart-punctuation). No-break
+   * spaces become ordinary spaces, as LaTeX may reject them.
    */
   | 'ascii';
 
 type Replacements = ReadonlyArray<readonly [RegExp, string]>;
+
+/** The no-break space (U+00A0, `&nbsp;`) and the narrow no-break space (U+202F). */
+export const NO_BREAK_SPACES = /[\u00a0\u202f]/g;
 
 const ASCII_PUNCTUATION: Replacements = [
   [/[‘’´]/g, "'"], // ‘ ’ ´
@@ -17,6 +21,7 @@ const ASCII_PUNCTUATION: Replacements = [
   [/[–―]/g, '--'], // – ―
   [/—/g, '---'], // —
   [/…/g, '...'], // …
+  [NO_BREAK_SPACES, ' '],
 ];
 
 /**
