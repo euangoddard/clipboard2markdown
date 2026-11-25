@@ -39,6 +39,7 @@ export function App(props: AppProps): JSX.Element {
   });
 
   let pastebin!: HTMLDivElement;
+  let pasteArea!: HTMLDivElement;
   let output!: HTMLTextAreaElement;
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const later = (callback: () => void, delay: number) => {
@@ -66,15 +67,30 @@ export function App(props: AppProps): JSX.Element {
     };
   });
 
+  const convertPaste = (pasteTarget: HTMLElement) => {
+    const convert = props.convert ?? htmlToMarkdown;
+    insertText(output, convert(pasteTarget.innerHTML, punctuation()));
+    setMarkdown(output.value);
+    setPhase('result');
+    flush(); // reveal the output before focusing or selecting it
+  };
+
   const onPaste = () => {
     later(() => {
-      const convert = props.convert ?? htmlToMarkdown;
-      insertText(output, convert(pastebin.innerHTML, punctuation()));
-      setMarkdown(output.value);
-      setPhase('result');
-      flush(); // reveal the output before focusing it
+      convertPaste(pastebin);
       output.focus();
       output.select();
+    }, PASTE_SETTLE_DELAY_MS);
+  };
+
+  // On a touch device, focusing the output would bring up the on-screen
+  // keyboard over the result, so the output is selected without focus.
+  const onPasteAreaPaste = () => {
+    later(() => {
+      convertPaste(pasteArea);
+      pasteArea.innerHTML = '';
+      pasteArea.blur();
+      output.setSelectionRange(0, output.value.length);
     }, PASTE_SETTLE_DELAY_MS);
   };
 
@@ -123,6 +139,23 @@ export function App(props: AppProps): JSX.Element {
       </header>
 
       <main class="stage">
+        <div class={['paste-area-frame', { 'paste-area-frame-compact': phase() !== 'instructions' }]}>
+          <div
+            id="paste-area"
+            ref={pasteArea}
+            class="paste-area"
+            contenteditable="true"
+            inputmode="none"
+            role="textbox"
+            aria-labelledby="paste-area-label"
+            onFocus={() => (pasteArea.innerHTML = '')}
+            onPaste={onPasteAreaPaste}
+          />
+          <p id="paste-area-label" class="paste-area-label" aria-hidden="true">
+            Tap and hold here, then choose <strong>Paste</strong>
+          </p>
+        </div>
+
         <section id="info" class="instructions" hidden={phase() !== 'instructions'} aria-labelledby="instructions-title">
           <div class="hero">
             <div class="keys" aria-hidden="true">

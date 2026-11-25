@@ -26,6 +26,11 @@ Usage
 Open the app, copy some rich text and press `Ctrl+V` (or `⌘+V` on Mac)
 anywhere on the page.
 
+On a phone or tablet, tap and hold the paste area at the top of the page,
+then choose **Paste**. The area stays above the converted Markdown, so you
+can paste again from there. On a tablet with a keyboard, the shortcut
+works too.
+
 The converted Markdown is selected, ready to copy with `Ctrl+C`
 (or `⌘+C`), or use the **Copy** button.
 
@@ -61,7 +66,8 @@ npm run build      # production build in dist/
     switch's "Pandoc ASCII punctuation" is `'ascii'` punctuation in the
     code; off is `'typographic'`.
 -   `src/App.tsx` is the page: the paste shortcut, the hidden paste target,
-    the punctuation switch, and the output.
+    the paste area shown on touch devices, the punctuation switch, and the
+    output.
 -   `src/punctuationPreference.ts` remembers the punctuation choice in
     `localStorage`.
 -   `legacy/` is the original implementation, kept unmodified as a test

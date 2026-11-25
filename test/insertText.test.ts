@@ -44,10 +44,10 @@ describe('insertText', () => {
     expect(field.value).toBe('new');
   });
 
-  it('focuses the field', () => {
+  it('leaves the focus where it was', () => {
     const field = textarea('', 0);
     insertText(field, 'x');
-    expect(document.activeElement).toBe(field);
+    expect(document.activeElement).toBe(document.body);
   });
 
   it.each([
