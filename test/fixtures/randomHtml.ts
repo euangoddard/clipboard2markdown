@@ -29,6 +29,9 @@ export interface RandomHtmlOptions {
 
 export function randomHtml(random: () => number, { wellFormed = false }: RandomHtmlOptions = {}): string {
   let depth = 0;
+  // The original converter split a table at every line break in a cell, so it
+  // is no oracle for them; the table specs cover line breaks in cells instead.
+  let isInTableCell = false;
   const pick = <T,>(items: readonly T[]): T => items[Math.floor(random() * items.length)]!;
   const words = () => Array.from({ length: 1 + Math.floor(random() * 3) }, () => pick(WORDS)).join(' ');
   const text = () => (wellFormed ? words() : pick(SPACES) + words() + pick(SPACES));
@@ -38,7 +41,7 @@ export function randomHtml(random: () => number, { wellFormed = false }: RandomH
   function inline(): string {
     const r = random();
     if (depth > 3 || r < 0.35) return text();
-    if (r < 0.45) return '<br>';
+    if (r < 0.45) return isInTableCell ? text() : '<br>';
     if (r < 0.55) return `<a href="http://e.com/${Math.floor(random() * 3)}">${depth++ < 4 ? inline() : 'link'}</a>`;
     if (r < 0.6) return '<img src="i.png" alt="pic">';
     const tag = pick(INLINE);
@@ -61,7 +64,9 @@ export function randomHtml(random: () => number, { wellFormed = false }: RandomH
     } else if (r < 0.65) {
       out = `<pre><code>${text()}\n${text()}</code></pre>`;
     } else if (r < 0.7) {
+      isInTableCell = true;
       out = `<table><thead><tr><th>${text()}</th><th>${inline()}</th></tr></thead><tbody><tr><td>${inline()}</td><td>${text()}</td></tr></tbody></table>`;
+      isInTableCell = false;
     } else {
       const tag = pick(BLOCK);
       const inlineOnly = wellFormed && /^(h\d|p)$/.test(tag);

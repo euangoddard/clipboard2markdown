@@ -293,10 +293,6 @@ describe('tables (GitHub Flavoured Markdown)', () => {
     );
   });
 
-  it('renders tables without a header as rows only', () => {
-    expectConversion('<table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>', '| 1 | 2 |\n| 3 | 4 |');
-  });
-
   it('keeps empty cells', () => {
     expectConversion(
       '<table><thead><tr><th>A</th><th></th></tr></thead><tbody><tr><td></td><td>x</td></tr></tbody></table>',

@@ -54,13 +54,40 @@ const indexIn = (siblings: ArrayLike<Node>, node: Node): number =>
 const setextHeading = (underlineChar: string) => (content: string) =>
   '\n\n' + content + '\n' + underlineChar.repeat(content.length) + '\n\n';
 
-function tableCell(content: string, node: Node): string {
-  const prefix = indexIn(node.parentNode!.childNodes, node) === 0 ? '| ' : ' ';
-  return prefix + content + ' |';
+const HIGHLIGHT = /highlight highlight-(\S+)/;
+
+// ---------------------------------------------------------------------------
+// Pipe tables (GFM and Pandoc)
+// ---------------------------------------------------------------------------
+
+const ALIGNMENT: Record<string, string> = { left: ':--', right: '--:', center: ':-:' };
+const EMPTY_CELL = '  |';
+
+interface TableLayout {
+  /** The row written as the pipe table's header: the first row with cells, whether or not it's in a `<thead>`. */
+  readonly headerRow: HTMLTableRowElement | undefined;
+  readonly columnCount: number;
 }
 
-const HIGHLIGHT = /highlight highlight-(\S+)/;
-const ALIGNMENT: Record<string, string> = { left: ':--', right: '--:', center: ':-:' };
+const widthOf = (row: HTMLTableRowElement): number =>
+  Array.from(row.cells).reduce((width, cell) => width + cell.colSpan, 0);
+
+function makeTableLayout(table: HTMLTableElement): TableLayout {
+  const rows = Array.from(table.querySelectorAll('tr')).filter((row) => row.closest('table') === table);
+  return {
+    headerRow: rows.find((row) => 0 < row.cells.length),
+    columnCount: rows.reduce((count, row) => Math.max(count, widthOf(row)), 0),
+  };
+}
+
+function makeDelimiterRow(headerRow: HTMLTableRowElement, columnCount: number): string {
+  const alignments = Array.from(headerRow.cells).flatMap((cell) => {
+    const align = cell.getAttribute('align');
+    return Array<string>(cell.colSpan).fill((align && ALIGNMENT[align]) || '---');
+  });
+  while (alignments.length < columnCount) alignments.push('---');
+  return '| ' + alignments.join(' | ') + ' |';
+}
 
 /**
  * Builds the ordered rule list.
@@ -75,6 +102,28 @@ const ALIGNMENT: Record<string, string> = { left: ':--', right: '--:', center: '
  */
 export function createRules(lineBreak: string): readonly LegacyRule[] {
   const restoreLineBreaks = (text: string) => text.replaceAll(lineBreak, '\n');
+
+  // A pipe table row must fit on one line, so the line breaks and paragraphs
+  // in a cell are joined with `<br>`: both GFM and Pandoc's HTML output render
+  // it as a line break, whereas a space would lose the break altogether.
+  const toCellText = (content: string) =>
+    restoreLineBreaks(content)
+      .split(/\\?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line)
+      .join('<br>')
+      .replaceAll('|', '\\|');
+
+  // Scoped to one conversion, so that each table is measured once rather than once per row.
+  const tableLayouts = new WeakMap<HTMLTableElement, TableLayout>();
+  const layoutOf = (table: HTMLTableElement): TableLayout => {
+    let layout = tableLayouts.get(table);
+    if (!layout) {
+      layout = makeTableLayout(table);
+      tableLayouts.set(table, layout);
+    }
+    return layout;
+  };
 
   // ---------------------------------------------------------------------------
   // 1. Pandoc rules — http://pandoc.org/README.html#pandocs-markdown
@@ -133,19 +182,25 @@ export function createRules(lineBreak: string): readonly LegacyRule[] {
       filter: (node) => (node as HTMLInputElement).type === 'checkbox' && node.parentNode!.nodeName === 'LI',
       replacement: (_c, node) => ((node as HTMLInputElement).checked ? '[x]' : '[ ]') + ' ',
     },
-    { key: 'tableCell', filter: is('TH', 'TD'), replacement: tableCell },
+    {
+      key: 'tableCell',
+      filter: is('TH', 'TD'),
+      replacement: (content, node) => {
+        const cell = node as HTMLTableCellElement;
+        const prefix = cell.cellIndex === 0 ? '| ' : ' ';
+        return prefix + toCellText(content) + ' |' + EMPTY_CELL.repeat(cell.colSpan - 1);
+      },
+    },
     {
       key: 'tableRow',
       filter: is('TR'),
       replacement: (content, node) => {
-        let borderCells = '';
-        if (node.parentNode!.nodeName === 'THEAD') {
-          for (const cell of Array.from(node.childNodes)) {
-            const align = (cell as Element).attributes?.getNamedItem('align')?.value;
-            borderCells += tableCell((align && ALIGNMENT[align]) || '---', cell);
-          }
-        }
-        return '\n' + content + (borderCells ? '\n' + borderCells : '');
+        const row = node as HTMLTableRowElement;
+        const table = row.closest('table');
+        if (!table) return '\n' + content;
+        const { headerRow, columnCount } = layoutOf(table);
+        const line = content + EMPTY_CELL.repeat(columnCount - widthOf(row));
+        return '\n' + line + (row === headerRow ? '\n' + makeDelimiterRow(row, columnCount) : '');
       },
     },
     { key: 'table', filter: is('TABLE'), replacement: (c) => '\n\n' + c + '\n\n' },

@@ -24,17 +24,21 @@ export function normalizeMarkdown(markdown: string): string {
     .join('\n');
 }
 
+const TABLE_DELIMITER_ROW = /^\|( *:?-+:? *\|)+$/;
+
 /**
  * A looser comparison for malformed HTML (block elements inside inline ones,
  * stray whitespace inside tags, …): only the sequence of visible characters
  * must match. Whitespace, hard-break backslashes and setext underlines are
  * ignored, since the two converters legitimately place line breaks
  * differently in such input (the original sometimes lost them altogether).
+ * So are table delimiter rows, which the original left out of tables
+ * without a `<thead>`.
  */
 export function textSignature(markdown: string): string {
   return markdown
     .split('\n')
-    .filter((line) => !/^[>\s]*((=+|-{2,})\\?)?$/.test(line))
+    .filter((line) => !/^[>\s]*((=+|-{2,})\\?)?$/.test(line) && !TABLE_DELIMITER_ROW.test(line))
     .join('\n')
     .replace(/[\s\\]+/g, '');
 }

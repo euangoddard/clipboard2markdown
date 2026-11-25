@@ -55,6 +55,27 @@ const deviations: Record<string, { html: string; original: string; now: string }
     original: 'a *b\\*c',
     now: 'a *b\\\n*c',
   },
+  // Tables (#4, #23, #21): the original wrote rows that GFM and Pandoc don't read as a table.
+  'table without a <thead> takes its first row as the header (was: no delimiter row)': {
+    html: '<table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table>',
+    original: '| 1 | 2 |\n| 3 | 4 |',
+    now: '| 1 | 2 |\n| --- | --- |\n| 3 | 4 |',
+  },
+  '<th> header cells in a <tbody> are the header (was: no delimiter row)': {
+    html: '<table><tbody><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2</td></tr></tbody></table>',
+    original: '| A | B |\n| 1 | 2 |',
+    now: '| A | B |\n| --- | --- |\n| 1 | 2 |',
+  },
+  'paragraphs in cells stay on the row (was: the table split over blank lines)': {
+    html: '<table><thead><tr><th><p>A</p></th><th><p>B</p></th></tr></thead><tbody><tr><td><p>1</p></td><td><p>2</p></td></tr></tbody></table>',
+    original: '|\n\nA\n\n |\n\nB\n\n |\n| --- | --- |\n|\n\n1\n\n |\n\n2\n\n |',
+    now: '| A | B |\n| --- | --- |\n| 1 | 2 |',
+  },
+  'a pipe in a cell is escaped (was: an extra cell)': {
+    html: '<table><thead><tr><th>A</th></tr></thead><tbody><tr><td>x | y</td></tr></tbody></table>',
+    original: '| A |\n| --- |\n| x | y |',
+    now: '| A |\n| --- |\n| x \\| y |',
+  },
 };
 
 describe('corpus: identical output to the original converter', () => {
