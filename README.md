@@ -45,6 +45,10 @@ extension](http://pandoc.org/README.html#smart-punctuation) expects
 instead (`"`, `'`, `--`, `---`, `...`), and no-break spaces as ordinary
 spaces, which LaTeX accepts. The browser remembers the choice.
 
+Tables become pipe tables, which GitHub and Pandoc both read. The first
+row is the header, whether or not it was marked up as one. A line break or
+paragraph inside a cell is written as `<br>`, and a `|` in a cell as `\|`.
+
 Development
 -----------
 
