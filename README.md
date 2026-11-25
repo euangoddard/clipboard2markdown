@@ -35,6 +35,12 @@ One can paste multiple times. A paste replaces the selected text, so
 pasting straight after a conversion overwrites it; place the cursor in
 the output first to insert at that point instead.
 
+Typographic punctuation (“curly quotes”, en and em dashes, the
+ellipsis) is kept as pasted. Switch on **Pandoc ASCII punctuation** to
+write it the way [Pandoc's smart
+extension](http://pandoc.org/README.html#smart-punctuation) expects
+instead (`"`, `'`, `--`, `---`, `...`). The browser remembers the choice.
+
 Development
 -----------
 
@@ -53,15 +59,21 @@ npm run build      # production build in dist/
 
 -   `src/converter/` holds the HTML to Markdown conversion: Turndown
     configured with the original Pandoc, GFM and Markdown rules, plus the
-    Pandoc smart-punctuation clean-up.
+    Pandoc clean-up of line breaks and, optionally, punctuation. The
+    switch's "Pandoc ASCII punctuation" is `'ascii'` punctuation in the
+    code; off is `'typographic'`.
 -   `src/App.tsx` is the page: the paste shortcut, the hidden paste target,
-    and the output.
+    the punctuation switch, and the output.
+-   `src/punctuationPreference.ts` remembers the punctuation choice in
+    `localStorage`.
 -   `legacy/` is the original implementation, kept unmodified as a test
     oracle.
 
 ### Tests
 
-The suite checks that the rewrite reproduces the original behaviour:
+The suite checks that the rewrite reproduces the original behaviour.
+The original always wrote ASCII punctuation, so the parity tests run with
+it switched on:
 
 -   `test/converter.test.ts` specifies every conversion rule. Each
     expectation is asserted against both the original converter and the
@@ -73,8 +85,8 @@ The suite checks that the rewrite reproduces the original behaviour:
     through the same user journeys (shortcut, paste, caret placement,
     repeated pastes) and compares their state after every step.
 -   `test/app.test.tsx`, `test/insertText.test.ts`,
-    `test/pasteShortcut.test.ts` and `test/smartPunctuation.test.ts`
-    cover the individual pieces.
+    `test/pasteShortcut.test.ts`, `test/cleanUp.test.ts` and
+    `test/punctuationPreference.test.ts` cover the individual pieces.
 
 About
 -----

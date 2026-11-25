@@ -1,8 +1,8 @@
 import TurndownService from 'turndown';
 import { createRules, isLegacyBlank, ruleFor } from './rules';
-import { smartPunctuation } from './smartPunctuation';
+import { cleanUpMarkdown, type Punctuation } from './cleanUp';
 
-export { smartPunctuation } from './smartPunctuation';
+export { cleanUpMarkdown, type Punctuation } from './cleanUp';
 
 /**
  * Builds a Turndown service configured with clipboard2markdown's rules.
@@ -73,11 +73,11 @@ function tidy(markdown: string): string {
 }
 
 /** Converts HTML (as pasted from the clipboard) into Pandoc-flavoured Markdown. */
-export function htmlToMarkdown(html: string): string {
+export function htmlToMarkdown(html: string, punctuation: Punctuation): string {
   const lineBreak = unusedPrivateUseCharacter(html);
   // Parse exactly as the original did: as a full document, converting <body>.
   const body = new DOMParser().parseFromString(escapeOrderedListTriggers(html), 'text/html').body;
   trimWhitespaceBeforeLineBreaks(body);
   const markdown = createTurndownService(lineBreak).turndown(body).replaceAll(lineBreak, '\n');
-  return smartPunctuation(tidy(markdown));
+  return cleanUpMarkdown(tidy(markdown), punctuation);
 }

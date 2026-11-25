@@ -1,7 +1,8 @@
 /**
  * Differential tests: the new Turndown-based converter against the original
  * to-markdown implementation, on a hand-written corpus and on thousands of
- * seeded, randomly generated documents.
+ * seeded, randomly generated documents. The original always wrote ASCII
+ * punctuation, so the new converter is run with it.
  */
 import { describe, expect, it } from 'vitest';
 import { htmlToMarkdown } from '../src/converter';
@@ -51,7 +52,7 @@ describe('corpus: identical output to the original converter', () => {
   for (const [name, html] of Object.entries(corpus)) {
     if (deviatingInputs.has(html)) continue;
     it(name, () => {
-      expect(htmlToMarkdown(html)).toBe(legacy.convert(html));
+      expect(htmlToMarkdown(html, 'ascii')).toBe(legacy.convert(html));
     });
   }
 });
@@ -60,7 +61,7 @@ describe('documented deviations from the original converter', () => {
   for (const [name, { html, original, now }] of Object.entries(deviations)) {
     it(name, () => {
       expect(legacy.convert(html), 'original output').toBe(original);
-      expect(htmlToMarkdown(html), 'new output').toBe(now);
+      expect(htmlToMarkdown(html, 'ascii'), 'new output').toBe(now);
       expect(textSignature(now)).toBe(textSignature(original));
     });
   }
@@ -74,7 +75,7 @@ describe('fuzzing against the original converter', () => {
     for (let seed = 1; seed <= SEEDS; seed++) {
       const html = randomHtml(createRandom(seed), { wellFormed: true });
       const expected = legacy.convert(html);
-      const actual = htmlToMarkdown(html);
+      const actual = htmlToMarkdown(html, 'ascii');
       if (actual === expected) {
         identical++;
         continue;
@@ -89,7 +90,7 @@ describe('fuzzing against the original converter', () => {
   it(`malformed documents (${SEEDS} seeds): same text and Markdown markers`, () => {
     for (let seed = 1; seed <= SEEDS; seed++) {
       const html = randomHtml(createRandom(seed));
-      expect(textSignature(htmlToMarkdown(html)), `seed ${seed}: ${html}`).toBe(textSignature(legacy.convert(html)));
+      expect(textSignature(htmlToMarkdown(html, 'ascii')), `seed ${seed}: ${html}`).toBe(textSignature(legacy.convert(html)));
     }
   });
 });

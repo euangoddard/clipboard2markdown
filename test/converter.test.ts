@@ -1,9 +1,11 @@
 /**
  * Specification of the HTML → Markdown conversion.
  *
- * Every expectation is checked against BOTH the new Turndown-based converter
- * and the original to-markdown implementation (loaded verbatim from
- * legacy/), so this file doubles as documentation of the original behaviour.
+ * Every expectation made with `expectConversion` is checked against BOTH the
+ * new Turndown-based converter and the original to-markdown implementation
+ * (loaded verbatim from legacy/), so this file doubles as documentation of
+ * the original behaviour. The original always wrote ASCII punctuation, so
+ * those expectations use it too.
  */
 import { describe, expect, it } from 'vitest';
 import { htmlToMarkdown } from '../src/converter';
@@ -13,7 +15,7 @@ const legacy = loadLegacy();
 
 function expectConversion(html: string, markdown: string): void {
   expect(legacy.convert(html), 'original converter').toBe(markdown);
-  expect(htmlToMarkdown(html), 'new converter').toBe(markdown);
+  expect(htmlToMarkdown(html, 'ascii'), 'new converter').toBe(markdown);
 }
 
 describe('headings', () => {
@@ -181,7 +183,7 @@ describe('lists', () => {
 
   it('keeps the marker width at four columns for two-digit numbers', () => {
     const html = '<ol>' + Array.from({ length: 10 }, (_, i) => `<li>item ${i + 1}</li>`).join('') + '</ol>';
-    expect(htmlToMarkdown(html).split('\n').slice(-2)).toEqual(['9.  item 9', '10. item 10']);
+    expect(htmlToMarkdown(html, 'ascii').split('\n').slice(-2)).toEqual(['9.  item 9', '10. item 10']);
     expectConversion(html, legacy.convert(html));
   });
 
@@ -259,8 +261,7 @@ describe('block quotes, rules and code', () => {
     expectConversion('<pre><code>function x() {\n  return 1;\n}</code></pre>', '```\nfunction x() {\n  return 1;\n}\n```');
   });
 
-  it('does not convert typographic punctuation… except that it does, even in code', () => {
-    // The smart-punctuation pass runs over the whole document.
+  it('writes ASCII punctuation over the whole document, even in code', () => {
     expectConversion('<pre><code>“a” — b</code></pre>', '```\n"a" --- b\n```');
   });
 
@@ -308,7 +309,25 @@ describe('tables (GitHub Flavoured Markdown)', () => {
   });
 });
 
-describe('smart punctuation (Pandoc)', () => {
+describe('typographic punctuation', () => {
+  it.each([
+    ['curly quotes and primes', '‘single’ “double” it´s 5″'],
+    ['dashes and the minus sign', 'a – b ― c — d − e'],
+    ['the ellipsis and bullet glyphs within a line', 'one • two · three ▪ four…'],
+  ])('keeps %s', (_, text) => {
+    expect(htmlToMarkdown(`<p>${text}</p>`, 'typographic')).toBe(text);
+  });
+
+  it('keeps it in code', () => {
+    expect(htmlToMarkdown('<pre><code>“a” — b</code></pre>', 'typographic')).toBe('```\n“a” — b\n```');
+  });
+
+  it('turns bullet glyphs that start a line into list markers', () => {
+    expect(htmlToMarkdown('<p>•&nbsp;one — first</p><p>·&nbsp;two</p>', 'typographic')).toBe('-\u00a0one — first\n\n-\u00a0two');
+  });
+});
+
+describe('ASCII punctuation (Pandoc)', () => {
   it('straightens curly quotes and primes', () => {
     expectConversion('<p>‘single’ “double” it´s 5″</p>', `'single' "double" it's 5"`);
   });
