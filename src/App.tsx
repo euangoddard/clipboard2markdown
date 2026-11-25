@@ -66,10 +66,16 @@ export function App(props: AppProps): JSX.Element {
     };
   });
 
-  const onPaste = () => {
+  const onPaste = (event: ClipboardEvent) => {
+    // Read the clipboard HTML directly from the event instead of letting the
+    // browser insert it into the live, attached pastebin node: rendering
+    // untrusted markup there would execute embedded handlers/active content
+    // (onerror, onload, <svg>, <iframe>) before we ever get to convert it.
+    event.preventDefault();
+    const html = event.clipboardData?.getData('text/html') ?? event.clipboardData?.getData('text/plain') ?? '';
     later(() => {
       const convert = props.convert ?? htmlToMarkdown;
-      insertText(output, convert(pastebin.innerHTML, punctuation()));
+      insertText(output, convert(html, punctuation()));
       setMarkdown(output.value);
       setPhase('result');
       flush(); // reveal the output before focusing it
