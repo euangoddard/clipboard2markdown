@@ -496,7 +496,8 @@ kbd {
    Paste area: touch devices have no paste shortcut, so they get a visible
    area to tap and hold, then paste into.
    --------------------------------------------------------------------------- */
-.paste-area-frame {
+.paste-area-frame,
+.for-touch {
   display: none;
 }
 
@@ -549,8 +550,13 @@ kbd {
     margin-bottom: 16px;
   }
 
-  .hero {
+  .hero,
+  .for-keyboard {
     display: none;
+  }
+
+  .for-touch {
+    display: revert;
   }
 
   .output {
