@@ -13,6 +13,7 @@ function setup(props: AppProps = {}) {
     wrapper: $('#wrapper'),
     output: $<HTMLTextAreaElement>('#output'),
     pastebin: $('#pastebin'),
+    pasteArea: screen.getByRole('textbox', { name: 'Tap and hold here, then choose Paste', hidden: true }),
     status: screen.getByRole('status', { hidden: true }),
     copyButton: () => screen.getByRole('button', { name: /cop/i, hidden: true }),
     asciiSwitch: screen.getByRole<HTMLInputElement>('switch', { name: 'Pandoc ASCII punctuation' }),
@@ -35,7 +36,15 @@ function setup(props: AppProps = {}) {
     vi.advanceTimersByTime(PASTE_SETTLE_DELAY_MS);
   };
 
-  return { ...result, ui, pressPaste, browserPastes, paste };
+  /** On a touch device: tap and hold the paste area, choose Paste, and the browser pastes into it. */
+  const pasteIntoPasteArea = (html: string) => {
+    ui.pasteArea.focus();
+    ui.pasteArea.innerHTML = html;
+    ui.pasteArea.dispatchEvent(new Event('paste', { bubbles: true }));
+    vi.advanceTimersByTime(PASTE_SETTLE_DELAY_MS);
+  };
+
+  return { ...result, ui, pressPaste, browserPastes, paste, pasteIntoPasteArea };
 }
 
 beforeEach(() => {
@@ -205,6 +214,94 @@ describe('pasting', () => {
     unmount();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'v', ctrlKey: true, bubbles: true }));
     expect(focus).not.toHaveBeenCalled();
+  });
+});
+
+describe('pasting into the paste area, on a touch device', () => {
+  it('is editable without bringing up the on-screen keyboard', () => {
+    const { ui } = setup();
+    expect(ui.pasteArea).toHaveAttribute('contenteditable', 'true');
+    expect(ui.pasteArea).toHaveAttribute('inputmode', 'none');
+  });
+
+  it('converts the pasted HTML after the browser has inserted it', () => {
+    const { ui } = setup();
+    ui.pasteArea.focus();
+    ui.pasteArea.innerHTML = '<h1>Title</h1><p>Some <b>bold</b> text</p>';
+    ui.pasteArea.dispatchEvent(new Event('paste', { bubbles: true }));
+
+    vi.advanceTimersByTime(PASTE_SETTLE_DELAY_MS - 1);
+    expect(ui.output.value).toBe('');
+    expect(ui.info).toBeVisible();
+
+    vi.advanceTimersByTime(1);
+    expect(ui.output.value).toBe('Title\n=====\n\nSome **bold** text');
+    expect(ui.wrapper).toBeVisible();
+    expect(ui.info).not.toBeVisible();
+  });
+
+  it('selects all of the output without focusing it, so the on-screen keyboard stays down', () => {
+    const { ui, pasteIntoPasteArea } = setup();
+    pasteIntoPasteArea('<p>hello <em>world</em></p>');
+    expect(document.activeElement).toBe(document.body);
+    expect([ui.output.selectionStart, ui.output.selectionEnd]).toEqual([0, 'hello *world*'.length]);
+  });
+
+  it('empties the paste area once converted', () => {
+    const { ui, pasteIntoPasteArea } = setup();
+    pasteIntoPasteArea('<p>x</p>');
+    expect(ui.pasteArea).toBeEmptyDOMElement();
+  });
+
+  it('empties the paste area of anything left in it when it is focused', () => {
+    const { ui } = setup();
+    ui.pasteArea.innerHTML = '<p>stale</p>';
+    ui.pasteArea.focus();
+    expect(ui.pasteArea).toBeEmptyDOMElement();
+  });
+
+  it('stays available from the result, replacing the previous conversion', () => {
+    const { ui, pasteIntoPasteArea } = setup();
+    pasteIntoPasteArea('<p>first</p>');
+    pasteIntoPasteArea('<p>second</p>');
+    expect(ui.output.value).toBe('second');
+    expect(ui.wrapper).toBeVisible();
+  });
+
+  it('inserts at the caret when the user has placed it in the output', () => {
+    const { ui, pasteIntoPasteArea } = setup();
+    pasteIntoPasteArea('<p>one three</p>');
+    ui.output.focus();
+    ui.output.setSelectionRange(4, 4);
+    pasteIntoPasteArea('<b>two</b> ');
+    expect(ui.output.value).toBe('one **two**three');
+  });
+
+  it('can be followed by the keyboard shortcut, as on a tablet with a keyboard', () => {
+    const { ui, paste, pasteIntoPasteArea } = setup();
+    pasteIntoPasteArea('<p>first</p>');
+    paste('<p>second</p>');
+    expect(ui.output.value).toBe('second');
+    expect(document.activeElement).toBe(ui.output);
+  });
+
+  it('uses the injected converter with the chosen punctuation', () => {
+    const convert = vi.fn(() => 'converted!');
+    const { ui, pasteIntoPasteArea } = setup({ convert });
+    ui.asciiSwitch.click();
+    flush();
+    pasteIntoPasteArea('<p>x</p>');
+    expect(convert).toHaveBeenCalledWith('<p>x</p>', 'ascii');
+    expect(ui.output.value).toBe('converted!');
+  });
+
+  it('stops converting after the app is unmounted', () => {
+    const { ui, unmount } = setup();
+    ui.pasteArea.innerHTML = '<p>late</p>';
+    ui.pasteArea.dispatchEvent(new Event('paste', { bubbles: true }));
+    unmount();
+    vi.advanceTimersByTime(PASTE_SETTLE_DELAY_MS);
+    expect(ui.output.value).toBe('');
   });
 });
 

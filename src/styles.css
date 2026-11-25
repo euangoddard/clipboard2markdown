@@ -492,6 +492,72 @@ kbd {
   font-size: 0.8rem;
 }
 
+/* ---------------------------------------------------------------------------
+   Paste area: touch devices have no paste shortcut, so they get a visible
+   area to tap and hold, then paste into.
+   --------------------------------------------------------------------------- */
+.paste-area-frame {
+  display: none;
+}
+
+.paste-area {
+  height: 160px;
+  padding: 16px;
+  overflow: hidden;
+  border: 1.5px dashed var(--accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  /* The pasted content is only there until it has been converted. */
+  color: transparent;
+  caret-color: var(--accent);
+  /* iOS zooms into a focused field whose text is smaller than 16px. */
+  font-size: 16px;
+}
+
+.paste-area * {
+  visibility: hidden;
+}
+
+.paste-area:focus {
+  border-style: solid;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.paste-area-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 16px;
+  color: var(--muted);
+  text-align: center;
+  pointer-events: none;
+}
+
+.paste-area-frame-compact .paste-area {
+  height: 56px;
+  box-shadow: none;
+}
+
+@media (pointer: coarse) {
+  .paste-area-frame {
+    position: relative;
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  .hero {
+    display: none;
+  }
+
+  .output {
+    font-size: 16px;
+  }
+}
+
 /* The paste target must stay focusable and editable, but invisible. */
 .pastebin {
   position: fixed;
