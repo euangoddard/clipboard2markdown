@@ -34,9 +34,11 @@ works too.
 The converted Markdown is selected, ready to copy with `Ctrl+C`
 (or `⌘+C`), or use the **Copy** button.
 
-One can paste multiple times. A paste replaces the selected text, so
-pasting straight after a conversion overwrites it; place the cursor in
-the output first to insert at that point instead.
+Every paste replaces the whole output with the newly converted
+Markdown, wherever the cursor is. You can still edit the Markdown before
+copying it, but copy it out before pasting again. (The original inserted
+a paste at the cursor instead, which made it easy to miss that old
+Markdown had been left in place.)
 
 Bold and italic are kept whether the source marks them up or sets them
 with styles, as Google Docs, Word and OneNote do.
@@ -117,10 +119,11 @@ it switched on:
     styles, and pipe tables that GFM and Pandoc read.
 -   `test/appParity.test.tsx` runs the original page and the new app
     through the same user journeys (shortcut, paste, caret placement,
-    repeated pastes) and compares their state after every step.
--   `test/app.test.tsx`, `test/insertText.test.ts`,
-    `test/pasteShortcut.test.ts`, `test/cleanUp.test.ts` and
-    `test/punctuationPreference.test.ts` cover the individual pieces.
+    repeated pastes) and compares their state after every step. The one
+    intentional difference is listed there: a paste replaces the whole
+    output, where the original inserted it at the caret.
+-   `test/app.test.tsx`, `test/pasteShortcut.test.ts`,
+    `test/cleanUp.test.ts` and `test/punctuationPreference.test.ts` cover the individual pieces.
 -   `test/seo.test.ts` checks the page metadata, and that every icon,
     image and manifest it links to is published.
 

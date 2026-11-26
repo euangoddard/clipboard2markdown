@@ -183,28 +183,35 @@ describe('pasting', () => {
     expect(ui.output.value).toBe('second');
   });
 
-  it('inserts at the caret when the user has placed it in the output', () => {
+  it.each([
+    ['at the start', 0, 0],
+    ['in the middle', 4, 4],
+    ['at the end', 9, 9],
+  ])('replaces the whole output when the caret is %s of it (#28)', (_where, start, end) => {
     const { ui, paste } = setup();
     paste('<p>one three</p>');
-    ui.output.setSelectionRange(4, 4);
-    paste('<b>two</b> ');
-    expect(ui.output.value).toBe('one **two**three');
+    ui.output.setSelectionRange(start, end);
+    paste('<b>two</b>');
+    expect(ui.output.value).toBe('**two**');
+    expect([ui.output.selectionStart, ui.output.selectionEnd]).toEqual([0, '**two**'.length]);
   });
 
-  it('appends when the caret is at the end, building up a document', () => {
-    const { ui, paste } = setup();
-    paste('<h2>Notes</h2>');
-    ui.output.setSelectionRange(ui.output.value.length, ui.output.value.length);
-    paste('<ul><li>a</li><li>b</li></ul>');
-    expect(ui.output.value).toBe('Notes\n-----' + '-   a\n-   b');
-  });
-
-  it('replaces only the selected text', () => {
+  it('replaces the whole output when only part of it is selected', () => {
     const { ui, paste } = setup();
     paste('<p>keep REPLACE keep</p>');
     ui.output.setSelectionRange(5, 12);
     paste('<i>new</i>');
-    expect(ui.output.value).toBe('keep *new* keep');
+    expect(ui.output.value).toBe('*new*');
+  });
+
+  it('replaces Markdown the user has edited', () => {
+    const { ui, paste } = setup();
+    paste('<p>one</p>');
+    ui.output.setRangeText(' edited', 3, 3, 'end');
+    ui.output.dispatchEvent(new Event('input', { bubbles: true }));
+    paste('<p>two</p>');
+    expect(ui.output.value).toBe('two');
+    expect(screen.getByText('1 line · 3 characters')).toBeInTheDocument();
   });
 
   it('never shows the instructions again', () => {
@@ -291,13 +298,13 @@ describe('pasting into the paste area, on a touch device', () => {
     expect(ui.wrapper).toBeVisible();
   });
 
-  it('inserts at the caret when the user has placed it in the output', () => {
+  it('replaces the whole output even when the user has placed the caret in it (#28)', () => {
     const { ui, pasteIntoPasteArea } = setup();
     pasteIntoPasteArea('<p>one three</p>');
     ui.output.focus();
     ui.output.setSelectionRange(4, 4);
-    pasteIntoPasteArea('<b>two</b> ');
-    expect(ui.output.value).toBe('one **two**three');
+    pasteIntoPasteArea('<b>two</b>');
+    expect(ui.output.value).toBe('**two**');
   });
 
   it('can be followed by the keyboard shortcut, as on a tablet with a keyboard', () => {

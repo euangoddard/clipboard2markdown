@@ -6,6 +6,11 @@
  * their observable state is compared: which panels are visible, what has
  * focus, the Markdown in the output and the selection within it. The new app
  * has Pandoc ASCII punctuation switched on, as the original always wrote it.
+ *
+ * One difference is intentional (#28): the original inserted a paste at the
+ * caret, so with the caret placed in the output the old Markdown stayed and
+ * the new was spliced into it. The new app replaces the whole output on every
+ * paste. Journeys that place the caret before pasting are listed separately.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render } from '@solidjs/testing-library';
@@ -92,24 +97,47 @@ const journeys: Record<string, Step[]> = {
   ),
   'pasting twice replaces the output': [...pasteOf('<p>first</p>'), ...pasteOf('<p>second</p>')],
   'pressing Ctrl+V again hides the previous output': [...pasteOf('<p>first</p>'), ctrlV],
-  'pasting at the caret': [...pasteOf('<p>alpha omega</p>'), { kind: 'select', start: 6 }, ...pasteOf('<b>beta</b> ')],
-  'pasting at the end': [...pasteOf('<p>start</p>'), { kind: 'select', start: 5 }, ...pasteOf('<p>end</p>')],
-  'pasting over a selection': [...pasteOf('<p>keep this keep</p>'), { kind: 'select', start: 5, end: 9 }, ...pasteOf('<i>that</i>')],
-  'pasting after editing': [
-    ...pasteOf('<p>one</p>'),
-    { kind: 'select', start: 3 },
-    { kind: 'type', text: '\n\n' },
-    ...pasteOf('<p>two</p>'),
-  ],
   'an empty paste': pasteOf(''),
-  'building a document from three pastes': [
-    ...pasteOf('<h2>Notes</h2>'),
-    { kind: 'select', start: 13 },
-    { kind: 'type', text: '\n\n' },
-    ...pasteOf('<p>Intro “quoted” — text…</p>'),
-    { kind: 'select', start: 0 },
-    ...pasteOf('<h1>Top</h1><br>'),
-  ],
+};
+
+/**
+ * Journeys where the original inserted the last paste at the caret and the
+ * new app replaces the whole output with it (#28). `original` is the
+ * original's final Markdown and `now` the new app's.
+ */
+const replacesInsteadOfInserting: Record<string, { steps: Step[]; original: string; now: string }> = {
+  'pasting at the caret': {
+    steps: [...pasteOf('<p>alpha omega</p>'), { kind: 'select', start: 6 }, ...pasteOf('<b>beta</b> ')],
+    original: 'alpha **beta**omega',
+    now: '**beta**',
+  },
+  'pasting at the end': {
+    steps: [...pasteOf('<p>start</p>'), { kind: 'select', start: 5 }, ...pasteOf('<p>end</p>')],
+    original: 'startend',
+    now: 'end',
+  },
+  'pasting over a selection': {
+    steps: [...pasteOf('<p>keep this keep</p>'), { kind: 'select', start: 5, end: 9 }, ...pasteOf('<i>that</i>')],
+    original: 'keep *that* keep',
+    now: '*that*',
+  },
+  'pasting after editing': {
+    steps: [...pasteOf('<p>one</p>'), { kind: 'select', start: 3 }, { kind: 'type', text: '\n\n' }, ...pasteOf('<p>two</p>')],
+    original: 'one\n\ntwo',
+    now: 'two',
+  },
+  'three pastes with the caret placed between them': {
+    steps: [
+      ...pasteOf('<h2>Notes</h2>'),
+      { kind: 'select', start: 13 },
+      { kind: 'type', text: '\n\n' },
+      ...pasteOf('<p>Intro “quoted” — text…</p>'),
+      { kind: 'select', start: 0 },
+      ...pasteOf('<h1>Top</h1><br>'),
+    ],
+    original: 'Top\n===Notes\n-----\n\nIntro "quoted" --- text...',
+    now: 'Top\n===',
+  },
 };
 
 /** Runs a journey on a page, recording its observable state before and after each step. */
@@ -121,6 +149,18 @@ function record(page: Page, steps: Step[]) {
   }
   return states;
 }
+
+/** Records a journey on the original page and then on the new app. */
+function recordBoth(steps: Step[]) {
+  const original = mountLegacyPage();
+  const expected = record(original, steps);
+  original.remove();
+  vi.clearAllTimers();
+  return [expected, record(mountNewApp(), steps)] as const;
+}
+
+const describeStep = (steps: Step[], index: number) =>
+  index === 0 ? 'before any step' : `after step ${index} (${steps[index - 1]!.kind})`;
 
 describe('the new app behaves like the original page', () => {
   beforeEach(() => {
@@ -137,16 +177,35 @@ describe('the new app behaves like the original page', () => {
   // would otherwise share the fake clock and steal focus from each other.
   for (const [name, steps] of Object.entries(journeys)) {
     it(name, () => {
-      const original = mountLegacyPage();
-      const expected = record(original, steps);
-      original.remove();
-      vi.clearAllTimers();
-
-      const actual = record(mountNewApp(), steps);
+      const [expected, actual] = recordBoth(steps);
       actual.forEach((state, index) => {
-        expect(state, index === 0 ? 'before any step' : `after step ${index} (${steps[index - 1]!.kind})`).toEqual(
-          expected[index],
-        );
+        expect(state, describeStep(steps, index)).toEqual(expected[index]);
+      });
+    });
+  }
+});
+
+describe('the new app replaces the output where the original inserted at the caret (#28)', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  for (const [name, { steps, original, now }] of Object.entries(replacesInsteadOfInserting)) {
+    it(name, () => {
+      const [expected, actual] = recordBoth(steps);
+      expect(expected.at(-1)!.markdown).toBe(original);
+      expect(actual.at(-1)!.markdown).toBe(now);
+      expect(actual.at(-1)!.selection).toEqual([0, now.length]);
+      // Apart from the Markdown and the selection spanning it, the pages agree.
+      const withoutText = ({ markdown: _markdown, selection: _selection, ...rest }: ReturnType<typeof observe>) => rest;
+      actual.forEach((state, index) => {
+        expect(withoutText(state), describeStep(steps, index)).toEqual(withoutText(expected[index]!));
       });
     });
   }

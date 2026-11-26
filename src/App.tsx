@@ -1,7 +1,6 @@
 import { createMemo, createSignal, flush, onSettled } from 'solid-js';
 import type { JSX } from '@solidjs/web';
 import { htmlToMarkdown, type Punctuation } from './converter';
-import { insertText } from './insertText';
 import { isPasteShortcut } from './pasteShortcut';
 import { Logo } from './Logo';
 import { loadPunctuation, savePunctuation } from './punctuationPreference';
@@ -69,7 +68,8 @@ export function App(props: AppProps): JSX.Element {
 
   const convertPaste = (pasteTarget: HTMLElement) => {
     const convert = props.convert ?? htmlToMarkdown;
-    insertText(output, convert(pasteTarget.innerHTML, punctuation()));
+    // Every paste replaces the whole output, wherever the caret is (#28).
+    output.value = convert(pasteTarget.innerHTML, punctuation());
     setMarkdown(output.value);
     setPhase('result');
     flush(); // reveal the output before focusing or selecting it
@@ -225,11 +225,10 @@ export function App(props: AppProps): JSX.Element {
             onInput={(event) => setMarkdown(event.currentTarget.value)}
           />
           <p class="hint for-keyboard">
-            Paste again to insert at the cursor, or select everything first to replace it.
+            Paste again to replace this Markdown.
           </p>
           <p class="hint for-touch">
-            Paste into the area above again to replace this Markdown, or tap in the Markdown first to insert at that
-            point.
+            Paste into the area above again to replace this Markdown.
           </p>
         </section>
 
