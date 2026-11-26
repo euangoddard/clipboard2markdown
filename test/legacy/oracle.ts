@@ -11,8 +11,6 @@ import pageSource from '../../legacy/index.html?raw';
 export interface LegacyApi {
   /** The legacy `convert(html)` function (to-markdown + pandoc rules + smart punctuation). */
   convert(html: string): string;
-  /** The legacy `insert(textarea, text)` helper. */
-  insert(field: HTMLTextAreaElement, value: string): void;
 }
 
 /** The original page, running in its own document. */
@@ -36,7 +34,7 @@ function loadToMarkdown(): unknown {
 
 /**
  * Evaluates the original clipboard2markdown.js with `document` bound to `doc`,
- * returning its private `convert`/`insert` functions and its DOMContentLoaded
+ * returning its private `convert` function and its DOMContentLoaded
  * handler (as `boot`).
  */
 function instantiate(doc: Document): LegacyApi & { boot(): void } {
@@ -46,7 +44,7 @@ function instantiate(doc: Document): LegacyApi & { boot(): void } {
   // Expose the private closures, and capture the DOMContentLoaded handler
   // instead of letting it bind to the (already loaded) document.
   const instrumented = appSource
-    .replace(EXPORT_HOOK, 'exported.convert = convert; exported.insert = insert;\n' + EXPORT_HOOK)
+    .replace(EXPORT_HOOK, 'exported.convert = convert;\n' + EXPORT_HOOK)
     .replace(
       "document.addEventListener('DOMContentLoaded', function () {",
       'exported.boot = (function () {',
